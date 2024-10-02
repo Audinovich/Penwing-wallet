@@ -40,7 +40,7 @@ public class ArticleController {
         try {
             Optional<Article> articleUpdated = articleService.updateArticleById(article, id);
             return articleUpdated.map(value -> new ResponseEntity<>(Optional.of(value), HttpStatus.OK))
-                    .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                    .orElseGet(() ->new ResponseEntity<>(HttpStatus.NOT_FOUND));
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
