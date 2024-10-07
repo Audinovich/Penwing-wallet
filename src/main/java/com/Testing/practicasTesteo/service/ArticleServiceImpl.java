@@ -29,7 +29,7 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public Optional<Article> updateArticleById(Article a, long id) {
         Optional<Article> articleFound = articleRepository.findById(id);
-        if (articleFound.isPresent()) {
+        if (articleFound.isPresent()){
             Article articleUpdated = articleFound.get();
             articleUpdated.setCodigo(a.getCodigo());
             articleUpdated.setDescripcion(a.getDescripcion());
