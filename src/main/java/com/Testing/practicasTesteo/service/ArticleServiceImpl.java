@@ -66,7 +66,7 @@ public class ArticleServiceImpl implements ArticleService {
             return true;
 
         } catch (Exception e) {
-            throw new ArticleNotFoundException("Articles not Found.");
+            throw new ArticleNotFoundException("Articles not Found. ");
         }
     }
 }
