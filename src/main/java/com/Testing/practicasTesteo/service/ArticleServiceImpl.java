@@ -38,7 +38,7 @@ public class ArticleServiceImpl implements ArticleService {
             return Optional.of(articleRepository.save(articleUpdated));
 
         } else {
-            throw new ArticleNotFoundException("Article ID  " + id + " no encontrado.");
+            throw new ArticleNotFoundException("Article ID  " + id + "no encontrado.");
         }
     }
 
