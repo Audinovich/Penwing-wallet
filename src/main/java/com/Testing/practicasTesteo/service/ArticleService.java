@@ -9,8 +9,8 @@ import java.util.Optional;
 public interface ArticleService {
 
     List<Article> getAllArticles();
-    Optional<Article> getArticleByid(long id) throws ArticleNotFoundException;
-    Optional<Article> updateArticleById(Article a, long id);
+    Article getArticleByid(long id) throws ArticleNotFoundException;
+    Article updateArticleById(Article a, long id);
     Article saveArticle(Article a);
     boolean deleteAllArticles();
     boolean deleteArticleById(long id);
