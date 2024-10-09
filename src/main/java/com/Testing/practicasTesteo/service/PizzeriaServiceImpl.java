@@ -54,7 +54,7 @@ public class PizzeriaServiceImpl implements PizzeriaService {
     }
 
     @Override
-    public Optional<Pizzeria> UpdatePizzeriaById(Pizzeria p, Long id) {
+    public Optional<Pizzeria> updatePizzeriaById(Pizzeria p, Long id) {
         Optional<Pizzeria> pizzeriaEncontrada = pizzeriaRepository.findById(id);
         if (pizzeriaEncontrada.isPresent()) {
             Pizzeria pizzeriaActualizada = pizzeriaEncontrada.get();

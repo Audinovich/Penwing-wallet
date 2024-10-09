@@ -21,21 +21,26 @@ public class ArticleController {
 
     @GetMapping("/getAllArticles")
     public ResponseEntity<List<Article>> getAllArticles() {
-        List<Article> articlesFound = articleService.getAllArticles();
-        if (articlesFound.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } else {
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
+       try{
+           List<Article> articlesFound = articleService.getAllArticles();
+            return new ResponseEntity<>(articlesFound,HttpStatus.OK);
+       }catch(ArticleNotFoundException e){
+           return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+       }catch (Exception e){
+           return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+       }
+
     }
 
     @GetMapping("/getArticleById/{articleId}")
     public ResponseEntity<Article> getArticleById(@PathVariable("articleId") long articleId) {
         try {
-            Article articleFoundById = articleService.getArticleByid(articleId);
+            Article articleFoundById = articleService.getArticleById(articleId);
             return new ResponseEntity<>(articleFoundById, HttpStatus.OK);
         } catch (ArticleNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }catch(Exception e){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -45,10 +50,11 @@ public class ArticleController {
             Article savedArticle = articleService.saveArticle(article);
             return new ResponseEntity<>(savedArticle, HttpStatus.CREATED);
         } catch (NotSavedException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+        }catch (Exception e){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 
     //TODO POR QUE MAP? en caso de manejar excepciones puedo obviar el uso de Optional.
     @PutMapping("/updateArticle/{id}")

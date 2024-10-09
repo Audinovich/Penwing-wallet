@@ -20,7 +20,9 @@ public class Pizzeria {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long pizzeriaId;
+
     private String name;
+
     private String address;
 
 

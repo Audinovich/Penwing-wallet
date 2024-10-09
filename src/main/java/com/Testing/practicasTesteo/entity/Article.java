@@ -1,10 +1,7 @@
 package com.Testing.practicasTesteo.entity;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,8 +17,12 @@ public class Article {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long articleId;
+
     String codigo;
+
+    @Column(name = "DESCRIPCION_DE_ARTICULO")
     String descripcion;
+
     int precio;
 
 

@@ -2,7 +2,6 @@ package com.Testing.practicasTesteo.service;
 
 import com.Testing.practicasTesteo.entity.Article;
 import com.Testing.practicasTesteo.exceptions.ArticleNotFoundException;
-import com.Testing.practicasTesteo.exceptions.NotFoundException;
 import com.Testing.practicasTesteo.exceptions.NotSavedException;
 import com.Testing.practicasTesteo.respository.ArticleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,23 +19,24 @@ public class ArticleServiceImpl implements ArticleService {
 
 
     @Override
-    public List<Article> getAllArticles() throws NotFoundException {
-        try{
-            return articleRepository.findAll();
-        }catch (Exception e){
-            throw new ArticleNotFoundException("No data found" + e.getMessage());
-
+    public List<Article> getAllArticles() throws ArticleNotFoundException {
+        try {
+            List<Article> articleList = articleRepository.findAll();
+            if (articleList.isEmpty()) {
+                throw new ArticleNotFoundException("No data found");
+            }
+            return articleList;
+        } catch (ArticleNotFoundException notFoundExeption) {
+            throw notFoundExeption;
+        } catch (Exception e) {
+            throw e;
         }
-
     }
 
     @Override
-    public Article getArticleByid(long id) throws ArticleNotFoundException {
-        try {
-            return articleRepository.findById(id).orElseThrow();
-        } catch (NoSuchElementException e) {
-            throw new ArticleNotFoundException("Article not found with id: " + id);
-        }
+    public Article getArticleById(long id) throws ArticleNotFoundException {
+        return articleRepository.findById(id)
+                .orElseThrow(() -> new ArticleNotFoundException("Article not found with id: " + id));
     }
 
     @Override
@@ -51,7 +51,7 @@ public class ArticleServiceImpl implements ArticleService {
             return articleRepository.save(articleUpdated);
 
         } else {
-            throw new ArticleNotFoundException("Article ID  " + id + "no encontrado.");
+            throw new ArticleNotFoundException("Article ID  " + id + "Not Found.");
         }
     }
 

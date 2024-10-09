@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Optional;
 
 
-
 @Service
 public class CustomerServicesImpl implements CustomerService {
 
@@ -19,12 +18,22 @@ public class CustomerServicesImpl implements CustomerService {
 
     @Override
     public List<Customer> getAllCustomers() {
-        return customerRepository.findAll();
+
+        try {
+            List<Customer> customerFound = customerRepository.findAll();
+            if (customerFound.isEmpty()) {
+                throw new CustomerNotFoundException("Customer not found");
+            }
+            return customerFound;
+        } catch (Exception e) {
+            throw new RuntimeException("Error al obtener los clientes", e);
+        }
     }
 
     @Override
-    public Optional<Customer> getCustomerById(long id) {
-        return customerRepository.findById(id);
+    public Customer getCustomerById(long id) throws CustomerNotFoundException{
+      return customerRepository.findById(id)
+              .orElseThrow(()->new CustomerNotFoundException("Customer not found with id: " + id));
     }
 
     @Override
@@ -33,7 +42,7 @@ public class CustomerServicesImpl implements CustomerService {
     }
 
     @Override
-    public Optional<Customer> updateCustomerById(Customer c, long id) {
+    public Customer updateCustomerById(Customer c, long id) {
         Optional<Customer> customerFound = customerRepository.findById(id);
         if (customerFound.isPresent()) {
             Customer customerUpdated = customerFound.get();
@@ -43,7 +52,7 @@ public class CustomerServicesImpl implements CustomerService {
             customerUpdated.setPhone(c.getPhone());
             customerUpdated.setEmail(c.getEmail());
 
-            return Optional.of(customerRepository.save(customerUpdated));
+            return customerRepository.save(customerUpdated);
         } else {
 
             throw new CustomerNotFoundException("Customer ID " + id + "no encontrado.");
@@ -59,15 +68,14 @@ public class CustomerServicesImpl implements CustomerService {
             return true;
 
         } catch (Exception e) {
-                throw new CustomerNotFoundException("Customers no encontrados.");
+            throw new CustomerNotFoundException("Customers no encontrados.");
         }
     }
 
     @Override
     public boolean deleteCustomerById(long id) {
         try {
-            Optional<Customer> customerFind = getCustomerById(id);
-            customerRepository.delete(customerFind.get());
+            Optional<Customer> customerFind = customerRepository.findById(id);
             return true;
         } catch (Exception e) {
             throw new CustomerNotFoundException("Customer ID " + id + " no encontrado.");

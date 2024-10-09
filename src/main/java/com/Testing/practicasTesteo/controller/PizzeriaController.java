@@ -46,7 +46,7 @@ public class PizzeriaController {
 
     @PutMapping("/update/{id}")
     public Optional<Pizzeria> updatePizzeriaById(@RequestBody Pizzeria p , @PathVariable("id") long id){
-    return pizzeriaService.UpdatePizzeriaById(p,id);
+    return pizzeriaService.updatePizzeriaById(p,id);
     }
 
 

@@ -17,5 +17,5 @@ public interface PizzeriaService {
 
     boolean deletePizzeriaById(Long id);
 
-    Optional <Pizzeria> UpdatePizzeriaById( Pizzeria p ,Long id);
+    Optional <Pizzeria> updatePizzeriaById( Pizzeria p ,Long id);
 }
