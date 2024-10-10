@@ -20,6 +20,16 @@ public class PizzeriaController {
     public List<Pizzeria> findAllPizzerias(){
         return pizzeriaService.getAllPizzerias();
     }
+    @GetMapping("/getPizzeria/{id}")
+    public Pizzeria getPizzeriaById(@PathVariable("id")long id){
+        return pizzeriaService.getPizzeriaByid(id);
+    }
+
+
+    @PutMapping("/update/{id}")
+    public Pizzeria updatePizzeriaById(@RequestBody Pizzeria p , @PathVariable("id") long id){
+        return pizzeriaService.updatePizzeriaById(p,id);
+    }
 
     @PostMapping("/save")
     public Pizzeria savePizzeria(@RequestBody Pizzeria p){
@@ -44,10 +54,7 @@ public class PizzeriaController {
         }
     }
 
-    @PutMapping("/update/{id}")
-    public Optional<Pizzeria> updatePizzeriaById(@RequestBody Pizzeria p , @PathVariable("id") long id){
-    return pizzeriaService.updatePizzeriaById(p,id);
-    }
+
 
 
 }

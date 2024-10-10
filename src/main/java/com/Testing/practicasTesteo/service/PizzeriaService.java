@@ -8,14 +8,11 @@ import java.util.Optional;
 public interface PizzeriaService {
 
     List<Pizzeria> getAllPizzerias();
-
-    Pizzeria savePizzeria(Pizzeria p);
-
-    Optional<Pizzeria> getPizzeriaByid(Long id);
-
+    Pizzeria getPizzeriaByid(Long id);
+    Pizzeria savePizzeria(Pizzeria pizzeria);
+    Pizzeria updatePizzeriaById( Pizzeria p ,Long id);
     boolean deleteAllPizzeria();
-
     boolean deletePizzeriaById(Long id);
 
-    Optional <Pizzeria> updatePizzeriaById( Pizzeria p ,Long id);
+
 }
