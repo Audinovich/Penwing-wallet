@@ -10,16 +10,16 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Entity
-@Table(name = "Pizzeria")
+@Table(name = "Wallet")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Pizzeria {
+public class Wallet {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long pizzeriaId;
+    private Long WalletId;
 
     private String name;
 
@@ -30,10 +30,10 @@ public class Pizzeria {
             cascade = CascadeType.ALL
     )
     @JoinTable(
-            name = "pizzeria_customer_map",
+            name = "Wallet_customer_map",
             joinColumns = @JoinColumn(
-                    name = "local_id",
-                    referencedColumnName = "pizzeriaId"
+                    name = "Wallet_id",
+                    referencedColumnName = "WalletId"
             ),
             inverseJoinColumns = @JoinColumn(
                     name="customer_id",
@@ -47,10 +47,10 @@ public class Pizzeria {
         cascade = CascadeType.ALL
 )
 @JoinTable(
-        name = "pizzeria_article_map",
+        name = "Wallet_article_map",
         joinColumns = @JoinColumn(
-                name = "local_id",
-                referencedColumnName = "pizzeriaId"
+                name = "Wallet_id",
+                referencedColumnName = "WalletId"
         ),
         inverseJoinColumns = @JoinColumn(
                 name="article_id",
