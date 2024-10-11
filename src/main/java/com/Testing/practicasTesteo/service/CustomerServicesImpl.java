@@ -1,8 +1,10 @@
 package com.Testing.practicasTesteo.service;
 
 import com.Testing.practicasTesteo.entity.Customer;
+import com.Testing.practicasTesteo.entity.Wallet;
 import com.Testing.practicasTesteo.exceptions.CustomerNotFoundException;
 import com.Testing.practicasTesteo.respository.CustomerRepository;
+import com.Testing.practicasTesteo.respository.WalletRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +16,10 @@ import java.util.Optional;
 public class CustomerServicesImpl implements CustomerService {
 
     @Autowired
-    CustomerRepository customerRepository;
+    private CustomerRepository customerRepository;
+
+    @Autowired
+    private WalletRepository walletRepository;
 
     @Override
     public List<Customer> getAllCustomers() {
@@ -26,7 +31,7 @@ public class CustomerServicesImpl implements CustomerService {
             }
             return customerFound;
         } catch (Exception e) {
-            throw new RuntimeException("Error al obtener los clientes", e);
+            throw new RuntimeException("Fail to get clients", e);
         }
     }
 
@@ -37,8 +42,14 @@ public class CustomerServicesImpl implements CustomerService {
     }
 
     @Override
-    public Customer saveCustomer(Customer c) {
-        return customerRepository.save(c);
+    public Customer saveCustomer(Customer customer) {
+        Customer savedCustomer = customerRepository.save(customer);
+        Wallet wallet = Wallet.builder()
+                .name(savedCustomer.getName() + "wallet`s")
+                .customer(savedCustomer)
+                .build();
+        walletRepository.save(wallet);
+        return savedCustomer;
     }
 
     @Override

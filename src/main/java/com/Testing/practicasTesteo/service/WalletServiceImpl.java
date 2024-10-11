@@ -51,7 +51,7 @@ public class WalletServiceImpl implements WalletService {
         if (walletFound.isPresent()) {
             Wallet updatedWallet = walletFound.get();
             updatedWallet.setName(w.getName());
-            updatedWallet.setAddress((w.getAddress()));
+
             return walletRepository.save(updatedWallet);
         } else {
             throw new WalletNotFoundException("Wallet con ID " + id + "no encontrada.");

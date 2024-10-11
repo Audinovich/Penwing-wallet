@@ -19,44 +19,17 @@ public class Wallet {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long WalletId;
+    private Long walletId;
 
     private String name;
 
-    private String address;
 
 
-    @ManyToMany(
-            cascade = CascadeType.ALL
-    )
-    @JoinTable(
-            name = "Wallet_customer_map",
-            joinColumns = @JoinColumn(
-                    name = "Wallet_id",
-                    referencedColumnName = "WalletId"
-            ),
-            inverseJoinColumns = @JoinColumn(
-                    name="customer_id",
-                    referencedColumnName ="customerId"
-            )
-    )
-    private List<Customer> customerList;
+    @OneToOne
+    @JoinColumn(name = "customer_id", referencedColumnName = "customerId")
+    private Customer customer;
 
-
-@ManyToMany(
-        cascade = CascadeType.ALL
-)
-@JoinTable(
-        name = "Wallet_article_map",
-        joinColumns = @JoinColumn(
-                name = "Wallet_id",
-                referencedColumnName = "WalletId"
-        ),
-        inverseJoinColumns = @JoinColumn(
-                name="article_id",
-                referencedColumnName ="articleId"
-        )
-)
-private List<Article> articleList;
-
+    @OneToMany
+    @JoinColumn(name = "wallet_id", referencedColumnName = "walletId")
+    private List<Article> articleList;
 }

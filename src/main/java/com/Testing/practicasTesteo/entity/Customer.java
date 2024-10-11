@@ -29,5 +29,7 @@ public class Customer {
 
     String phone;
 
+    @OneToOne(mappedBy = "customer",cascade = CascadeType.ALL)
+    private Wallet wallet;
 
 }
