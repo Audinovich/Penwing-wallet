@@ -1,12 +1,15 @@
 package com.Testing.practicasTesteo.service;
 
+import com.Testing.practicasTesteo.entity.Article;
 import com.Testing.practicasTesteo.entity.Customer;
 import com.Testing.practicasTesteo.entity.Wallet;
 import com.Testing.practicasTesteo.exceptions.CustomerNotFoundException;
+import com.Testing.practicasTesteo.respository.ArticleRepository;
 import com.Testing.practicasTesteo.respository.CustomerRepository;
 import com.Testing.practicasTesteo.respository.WalletRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +23,10 @@ public class CustomerServicesImpl implements CustomerService {
 
     @Autowired
     private WalletRepository walletRepository;
+
+    @Autowired
+    private ArticleRepository articleRepository;
+
 
     @Override
     public List<Customer> getAllCustomers() {
@@ -36,19 +43,28 @@ public class CustomerServicesImpl implements CustomerService {
     }
 
     @Override
-    public Customer getCustomerById(long id) throws CustomerNotFoundException{
-      return customerRepository.findById(id)
-              .orElseThrow(()->new CustomerNotFoundException("Customer not found with id: " + id));
+    public Customer getCustomerById(long id) throws CustomerNotFoundException {
+        return customerRepository.findById(id)
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found with id: " + id));
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Customer saveCustomer(Customer customer) {
+
         Customer savedCustomer = customerRepository.save(customer);
+
+
         Wallet wallet = Wallet.builder()
-                .name(savedCustomer.getName() + "wallet`s")
-                .customer(savedCustomer)
+                .name(savedCustomer.getName() + "'s Wallet")
                 .build();
+
+        List<Article> existingArticles = articleRepository.findAll();
+
+        wallet.setArticles(existingArticles);
+
         walletRepository.save(wallet);
+
         return savedCustomer;
     }
 

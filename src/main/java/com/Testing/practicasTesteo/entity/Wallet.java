@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -29,7 +30,12 @@ public class Wallet {
     @JoinColumn(name = "customer_id", referencedColumnName = "customerId")
     private Customer customer;
 
-    @OneToMany
-    @JoinColumn(name = "wallet_id", referencedColumnName = "walletId")
-    private List<Article> articleList;
+   @ManyToMany
+
+   @JoinTable(
+           name = "Wallet_Article",
+           joinColumns = @JoinColumn(name = "wallet_id"),
+           inverseJoinColumns = @JoinColumn(name = "article_id")
+   )
+   private List<Article> articles = new ArrayList<>();
 }
