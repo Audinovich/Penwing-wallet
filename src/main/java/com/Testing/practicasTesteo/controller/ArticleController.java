@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("Article")
+@RequestMapping("/article")
 public class ArticleController {
 
     @Autowired
@@ -118,24 +118,31 @@ public class ArticleController {
     @GetMapping("/fetch-crypto")
     public ResponseEntity<List<Article>> fetchCryptoData(@RequestParam(value = "mock", defaultValue = "true") boolean mock) {
         try {
-            // Llama al servicio para obtener datos (simulados o reales)
+
             List<Article> cryptoData = articleService.fetchCryptoData(mock);
-
-            // Guardar los datos obtenidos en la base de datos
             articleService.saveArticles(cryptoData);
-
-            // Responder con los datos guardados
             return new ResponseEntity<>(cryptoData, HttpStatus.OK);
         } catch (IOException e) {
-            // Manejo de errores de IO o de la API
+
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (NotSavedException e) {
-            // Manejo de errores al guardar en la base de datos
+
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    @GetMapping("/getArticlesByCustomerId/{customerId}")
+    public ResponseEntity<List<Article>> getArticlesByCustomerId(@PathVariable("customerId") long customerId) throws ArticleNotFoundException {
+        try {
+            List<Article> articlesFound = articleService.getArticlesByCustomerId(customerId);
+            return new ResponseEntity<>(articlesFound, HttpStatus.OK);
+        } catch (ArticleNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
+    }
 
 
 }

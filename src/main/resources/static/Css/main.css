@@ -1,0 +1,43 @@
+body {
+    background-image: url('/Img/logo Penwing.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+.menu {
+    width: 150px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: black;
+    color: white;
+    padding-top: 60px;
+}
+
+.menu a {
+    display: block;
+    color: grey;
+    padding: 16px;
+    text-decoration: none;
+}
+
+.menu a:hover {
+    background: #575757;
+}
+
+.top-right {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+}
+
+.top-right button {
+    margin-left: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+}

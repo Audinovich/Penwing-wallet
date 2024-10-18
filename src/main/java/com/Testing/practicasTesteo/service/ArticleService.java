@@ -6,7 +6,6 @@ import com.Testing.practicasTesteo.exceptions.ArticleNotFoundException;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 public interface ArticleService {
 
@@ -19,5 +18,5 @@ public interface ArticleService {
     boolean deleteArticleById(long id);
     List<Article> getMockCryptos() throws IOException;
     List<Article> fetchCryptoData(boolean mock) throws IOException;;
-
+    List<Article> getArticlesByCustomerId(Long customerId) throws ArticleFetchException;
 }

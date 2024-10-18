@@ -1,10 +1,12 @@
 package com.Testing.practicasTesteo.service;
 
 import com.Testing.practicasTesteo.entity.Article;
+import com.Testing.practicasTesteo.entity.Credit;
 import com.Testing.practicasTesteo.entity.Customer;
 import com.Testing.practicasTesteo.entity.Wallet;
 import com.Testing.practicasTesteo.exceptions.CustomerNotFoundException;
 import com.Testing.practicasTesteo.respository.ArticleRepository;
+import com.Testing.practicasTesteo.respository.CreditRepository;
 import com.Testing.practicasTesteo.respository.CustomerRepository;
 import com.Testing.practicasTesteo.respository.WalletRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,9 @@ public class CustomerServicesImpl implements CustomerService {
 
     @Autowired
     private ArticleRepository articleRepository;
+
+    @Autowired
+    private CreditRepository creditRepository;
 
 
     @Override
@@ -51,21 +56,34 @@ public class CustomerServicesImpl implements CustomerService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Customer saveCustomer(Customer customer) {
-
+        // Guardar el cliente
         Customer savedCustomer = customerRepository.save(customer);
 
-
+        // Crear y asociar el wallet
         Wallet wallet = Wallet.builder()
                 .name(savedCustomer.getName() + "'s Wallet")
+                .customer(savedCustomer)
                 .build();
 
         List<Article> existingArticles = articleRepository.findAll();
-
         wallet.setArticles(existingArticles);
-
         walletRepository.save(wallet);
+        savedCustomer.setWallet(wallet);
 
-        return savedCustomer;
+        // Crear y asociar el crédito
+        Credit credit = Credit.builder()
+                .customer(savedCustomer)
+                .euro(0L)
+                .bitcoin(0L)
+                .ethereum(0L)
+                .ripple(0L)
+                .litecoin(0L)
+                .cardano(0L)
+                .build();
+        creditRepository.save(credit);
+
+        // Guardar la entidad Customer actualizada con relaciones establecidas
+        return customerRepository.save(savedCustomer);
     }
 
     @Override
@@ -75,6 +93,7 @@ public class CustomerServicesImpl implements CustomerService {
             Customer customerUpdated = customerFound.get();
             customerUpdated.setName(c.getName());
             customerUpdated.setSurname(c.getSurname());
+            customerUpdated.setPassword(c.getPassword());
             customerUpdated.setAddress(c.getAddress());
             customerUpdated.setPhone(c.getPhone());
             customerUpdated.setEmail(c.getEmail());

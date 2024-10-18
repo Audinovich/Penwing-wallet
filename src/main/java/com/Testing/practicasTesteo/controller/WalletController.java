@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("Wallet")
+@RequestMapping("/wallet")
 public class WalletController {
 
     @Autowired
@@ -40,12 +40,12 @@ public class WalletController {
     }
 
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/updateWallet/{id}")
     public Wallet updateWalletById(@RequestBody Wallet p, @PathVariable("id") long id) {
         return walletService.updateWalletById(p, id);
     }
 
-    @PostMapping("/save")
+    @PostMapping("/saveWallet")
     public Wallet saveWallet(@RequestBody Wallet p) {
         return walletService.saveWallet(p);
     }

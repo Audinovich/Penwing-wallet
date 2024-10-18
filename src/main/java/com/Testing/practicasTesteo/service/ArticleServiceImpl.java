@@ -55,7 +55,6 @@ public class ArticleServiceImpl implements ArticleService {
         Optional<Article> articleFound = articleRepository.findById(id);
         if (articleFound.isPresent()) {
             Article articleUpdated = articleFound.get();
-
             articleUpdated.setSymbol(article.getSymbol());
             articleUpdated.setName(article.getName());
             articleUpdated.setImage(article.getImage());
@@ -143,6 +142,21 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
+    public List<Article> getArticlesByCustomerId(Long customerId) throws ArticleNotFoundException, ArticleFetchException {
+        try {
+            List<Article> articlesFound = articleRepository.getAllArticlesByCustomerId(customerId);
+            if (articlesFound.isEmpty()) {
+                throw new ArticleNotFoundException("No data found");
+            }
+            return articlesFound;
+        } catch (DataAccessException e) {
+            throw new ArticleFetchException("Error accessing article data: " + e.getMessage(), e);
+        } catch (Exception e) {
+            throw new RuntimeException("Unexpected error: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
     public List<Article> getMockCryptos() throws IOException {
         List<Article> cryptos = new ArrayList<>();
         cryptos.add(new Article("bitcoin", "btc", "https://assets.coingecko.com/coins/images/1/large/bitcoin.png", 45000, new BigInteger("850000000000"), new BigInteger("50000000000"), 46000, 44000, -1000, -2.17, new BigInteger("10000000000"), -1.17, new BigInteger("18000000"), new BigInteger("21000000"), 69000, -34.83, "2021-11-10T00:00:00Z", "2024-10-12T20:36:50Z"));
@@ -162,11 +176,9 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
 
-
-
     private List<Article> fetchCryptoDataFromAPI() throws IOException {
         String apiUrl = "https://api.ejemplo.com/cryptodata";
-        String apiKey = "TU_API_KEY";
+        String apiKey = "API_KEY";
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(apiUrl))
