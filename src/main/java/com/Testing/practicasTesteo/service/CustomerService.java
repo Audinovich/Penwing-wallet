@@ -13,6 +13,7 @@ public interface CustomerService {
     Customer updateCustomerById(Customer c, long id);
     boolean deleteAllCustomers();
     boolean deleteCustomerById(long id);
+    Customer authenticate(String email, String password);
 
 
 }

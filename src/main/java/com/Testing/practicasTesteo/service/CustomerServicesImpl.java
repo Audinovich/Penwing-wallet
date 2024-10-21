@@ -128,4 +128,11 @@ public class CustomerServicesImpl implements CustomerService {
         }
 
     }
+
+    @Override
+    public Customer authenticate(String email, String password) {
+        Optional<Customer> usuario = customerRepository.findByEmailAndPassword(email, password);
+        return usuario.orElse(null);
+
+    }
 }

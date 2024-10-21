@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penwing - Login</title>
+    <link rel="stylesheet" type="text/css" href="/CSS/Style.css">
+    <link rel="icon" href="/Img/icoPenwing.png" type="image/png">
+</head>
+<body>
+<div th:if="${loginError}">
+    <p th:text="${loginError}"></p>
+</div>
+<div class="login-container">
+    <form  action="/submit-login" method="post">
+        <label for="email">Email:</label>
+        <input type="text" id="email" name="email" required>
+
+        <label for="password">Contraseña:</label>
+        <input type="password" id="password" name="password" required>
+
+        <input type="submit" value="Login">
+    </form>
+    <button onclick="location.href='Customerregistration.html'">Crear cuenta</button>
+    <a href="reset-password.html">¿Olvidaste tu contraseña?</a>
+</div>
+
+</body>
+</html>

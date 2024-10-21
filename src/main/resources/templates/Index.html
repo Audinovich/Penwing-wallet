@@ -5,22 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Penwing</title>
     <link rel="stylesheet" href="css/main.css">
-    <link rel="icon" href="/Img/icoPenwing.png" type="image/x-icon">
+    <link rel="icon" href="/Img/icoPenwing.png" type="image/png">
 </head>
 <body>
-
 <div class="menu">
-    <a href="#">Elemento 1</a>
-    <a href="#">Elemento 2</a>
-    <a href="#">Elemento 3</a>
-    <a href="#">Elemento 4</a>
-    <a href="#">Elemento 5</a>
+    <div class="left-icon">
+        <a href="javascript:void(0)" class="dropbtn">&#8943;</a>
+        <ul class="dropdown-content">
+            <li><a href="#">Elemento 1</a></li>
+            <li><a href="#">Elemento 2</a></li>
+            <li><a href="#">Elemento 3</a></li>
+        </ul>
+    </div>
+    <div class="right-icons">
+        <div class="icon" onclick="window.location.href='/CustomerRegistration.html'">
+            <img src="/Img/user.jpg" alt="Icon 1">
+        </div>
+        <div class="icon" onclick="window.location.href='/Login.html'">
+            <img src="/Img/user.jpg" alt="Icon 2">
+        </div>
+    </div>
 </div>
-
-<div class="top-right">
-    <button onclick="window.location.href='/CustomerRegistration.html'">Sign Up</button>
-    <button onclick="window.location.href='/Login.html'">Sign In</button>
-</div>
-
-<script src="js/main.js"></script>
+<script src="Js/Menu.js"></script>
 </body>
+</html>
