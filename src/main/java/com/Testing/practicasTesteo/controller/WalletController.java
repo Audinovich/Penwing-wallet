@@ -34,15 +34,15 @@ public class WalletController {
     }
 
     
-    @GetMapping("/getWallet/{id}")
-    public Wallet getWalletById(@PathVariable("id") long id) {
-        return walletService.getWalletByid(id);
+    @GetMapping("/getWallet/{walletId}")
+    public Wallet getWalletById(@PathVariable("walletId") long walletId) {
+        return walletService.getWalletById(walletId);
     }
 
 
-    @PutMapping("/updateWallet/{id}")
-    public Wallet updateWalletById(@RequestBody Wallet p, @PathVariable("id") long id) {
-        return walletService.updateWalletById(p, id);
+    @PutMapping("/updateWallet/{walletId}")
+    public Wallet updateWalletById(@RequestBody Wallet p, @PathVariable("walletId") long walletId) {
+        return walletService.updateWalletById(p, walletId);
     }
 
     @PostMapping("/saveWallet")

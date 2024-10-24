@@ -4,6 +4,7 @@ import com.Testing.practicasTesteo.entity.Article;
 import com.Testing.practicasTesteo.entity.Credit;
 import com.Testing.practicasTesteo.entity.Customer;
 import com.Testing.practicasTesteo.entity.Wallet;
+import com.Testing.practicasTesteo.exceptions.AuthenticationException;
 import com.Testing.practicasTesteo.exceptions.CustomerNotFoundException;
 import com.Testing.practicasTesteo.respository.ArticleRepository;
 import com.Testing.practicasTesteo.respository.CreditRepository;
@@ -131,8 +132,15 @@ public class CustomerServicesImpl implements CustomerService {
 
     @Override
     public Customer authenticate(String email, String password) {
-        Optional<Customer> usuario = customerRepository.findByEmailAndPassword(email, password);
-        return usuario.orElse(null);
-
+        try {
+            Optional<Customer> usuario = customerRepository.findByEmailAndPassword(email, password);
+            if (usuario.isPresent()) {
+                return usuario.get();
+            } else {
+                throw new AuthenticationException("Wrong credentials.");
+            }
+        } catch (Exception e) {
+            throw new AuthenticationException("Authentication Failed", e);
+        }
     }
 }

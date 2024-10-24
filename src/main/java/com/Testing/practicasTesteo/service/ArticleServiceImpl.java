@@ -89,29 +89,29 @@ public class ArticleServiceImpl implements ArticleService {
             throw new NotSavedException("Error saving article" + e.getMessage(), e);
         }
     }
-/*
-    @Override
-    public List<Article> saveArticles(List<Article> articles) {
-        try {
-            // Registrar los artículos que se están intentando guardar
-            System.out.println("Intentando guardar los siguientes artículos: " + articles);
 
-            List<Article> savedArticles = articleRepository.saveAll(articles);
+    /*
+        @Override
+        public List<Article> saveArticles(List<Article> articles) {
+            try {
+                // Registrar los artículos que se están intentando guardar
+                System.out.println("Intentando guardar los siguientes artículos: " + articles);
 
-            // Verificar si los artículos fueron guardados
-            System.out.println("Artículos guardados con éxito: " + savedArticles);
+                List<Article> savedArticles = articleRepository.saveAll(articles);
 
-            return savedArticles;
-        } catch (Exception e) {
-            // Registrar la excepción con más detalles
-            System.err.println("Error al guardar los artículos: " + e.getMessage());
-            throw new NotSavedException("Error saving articles: " + e.getMessage(), e);
+                // Verificar si los artículos fueron guardados
+                System.out.println("Artículos guardados con éxito: " + savedArticles);
+
+                return savedArticles;
+            } catch (Exception e) {
+                // Registrar la excepción con más detalles
+                System.err.println("Error al guardar los artículos: " + e.getMessage());
+                throw new NotSavedException("Error saving articles: " + e.getMessage(), e);
+            }
         }
-    }
-*/
+    */
     @Override
     public boolean deleteAllArticles() {
-
         try {
             articleRepository.deleteAll();
             return true;
@@ -166,6 +166,7 @@ public class ArticleServiceImpl implements ArticleService {
         cryptos.add(new Article("cardano", "ada", "https://assets.coingecko.com/coins/images/975/large/cardano.png", 0.50, new BigInteger("16000000000"), new BigInteger("700000000"), 0.55, 0.48, -0.02, -3.85, new BigInteger("200000000"), -1.23, new BigInteger("32000000000"), new BigInteger("450000000"), 3.10, -83.87, "2021-09-02T00:00:00Z", "2024-10-12T20:36:50Z"));
         return cryptos;
     }
+
     @Override
     public List<Article> saveArticles(List<Article> articles) {
         try {

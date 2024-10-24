@@ -31,7 +31,7 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public Wallet getWalletByid(Long id) throws WalletNotFoundException {
+    public Wallet getWalletById(Long id) throws WalletNotFoundException {
         return walletRepository.findById(id).orElseThrow(() -> new WalletNotFoundException("Wallet ID" + id + "Not Found"));
     }
 

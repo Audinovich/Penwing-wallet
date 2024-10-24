@@ -25,6 +25,7 @@ public class Wallet {
     private Long walletId;
 
     private String name;
+    long cuantity;
 
 
 

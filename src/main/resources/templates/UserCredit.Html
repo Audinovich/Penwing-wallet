@@ -3,37 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Wallet</title>
+    <title>User Credit</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
 </head>
 <body>
 <div class="container">
-    <h2>Market Information:</h2>
+    <h1 class="my-4">Welcome, <span th:text="${customerName}">User</span>!</h1>
 
-    <!-- Se asume que Thymeleaf está en uso y session.wallet_id está disponible -->
+    <h2>Your Wallet: <span id="euro-value">0.00</span> €</h2>
     <input type="hidden" id="wallet_id" th:value="${session.wallet_id}">
+    <input type="hidden" id="customer_id" th:value="${session.customer_id}">
 
     <table class="table table-bordered table-striped">
         <thead>
         <tr>
             <th>#</th>
             <th>Symbol</th>
-            <th>Name</th>
             <th>Image</th>
+            <th>Name</th>
+            <th>Credit Amount</th>
             <th>Current Price</th>
-            <th>Market Cap</th>
-            <th>Total Volume</th>
-            <th>High (24h)</th>
-            <th>Low (24h)</th>
-            <th>Price Change (24h)</th>
-            <th>Price Change (%) (24h)</th>
-            <th>All Time High</th>
-            <th>ATH Change (%)</th>
-            <th>Last Updated</th>
         </tr>
         </thead>
         <tbody id="wallet-articles">
-        <tr><td colspan="14">Loading articles...</td></tr>
+        <tr><td colspan="5">Loading articles and credit...</td></tr>
         </tbody>
     </table>
 
@@ -42,12 +35,9 @@
     </div>
 </div>
 
-<!-- Dependencias de Bootstrap y jQuery -->
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-
-<!-- Archivo JavaScript personalizado para manejar la lógica de los artículos -->
-<script src="/Js/Wallet.js"></script>
+<script src="/Js/Credit.js"></script>
 </body>
 </html>

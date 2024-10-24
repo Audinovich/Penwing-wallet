@@ -1,8 +1,11 @@
 package com.Testing.practicasTesteo.exceptions;
 
-public class NotFoundException extends RuntimeException{
+import org.springframework.dao.DataAccessException;
 
-    public NotFoundException(String message){
+public class NotFoundException extends RuntimeException {
+
+    public NotFoundException(String message) {
+
         super(message);
     }
 }

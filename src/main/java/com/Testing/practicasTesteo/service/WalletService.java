@@ -7,10 +7,15 @@ import java.util.List;
 public interface WalletService {
 
     List<Wallet> getAllWallets();
-    Wallet getWalletByid(Long id);
+
+    Wallet getWalletById(Long id);
+
     Wallet saveWallet(Wallet Wallet);
-    Wallet updateWalletById( Wallet p ,Long id);
+
+    Wallet updateWalletById(Wallet p, Long id);
+
     boolean deleteAllWallet();
+
     boolean deleteWalletById(Long id);
 
 

@@ -1,6 +1,7 @@
 package com.Testing.practicasTesteo.controller;
 
 
+import com.Testing.practicasTesteo.dto.ArticleCreditDTO;
 import com.Testing.practicasTesteo.entity.Article;
 import com.Testing.practicasTesteo.entity.Credit;
 import com.Testing.practicasTesteo.exceptions.ArticleFetchException;
@@ -34,6 +35,16 @@ public class CreditController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
+    }
+
+    @GetMapping("/article-credit-info/{customerId}")
+    public ResponseEntity<List<ArticleCreditDTO>> getArticleCreditInfo(@PathVariable("customerId") Long customerId) {
+        try {
+            List<ArticleCreditDTO> articleCreditInfo = creditService.getArticleCreditInfoByCustomerId(customerId);
+            return ResponseEntity.ok(articleCreditInfo);
+        } catch (ArticleFetchException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
     @PutMapping("/addCredit/{customerId}")

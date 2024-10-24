@@ -1,6 +1,7 @@
 package com.Testing.practicasTesteo.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,6 +43,7 @@ public class Article {
     private String lastUpdated;
 
     @ManyToMany(mappedBy = "articles")
+    @JsonIgnore
     private List<Wallet> wallets = new ArrayList<>();
 
     public Article(String symbol, String name, String image, double currentPrice, BigInteger marketCap, BigInteger totalVolume, double high24h, double low24h, double priceChange24h, double priceChangePercentage24h, BigInteger marketCapChange24h, double marketCapChangePercentage24h, BigInteger circulatingSupply, BigInteger totalSupply, double ath, double athChangePercentage, String athDate, String lastUpdated) {
