@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,12 +25,12 @@ public class Credit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long creditId;
 
-    private Long euro;
-    private Long bitcoin;
-    private Long ethereum;
-    private Long ripple;
-    private Long litecoin;
-    private Long cardano;
+    private BigDecimal euro;
+    private BigDecimal bitcoin;
+    private BigDecimal ethereum;
+    private BigDecimal ripple;
+    private BigDecimal litecoin;
+    private BigDecimal cardano;
 
     @ManyToOne
     @JoinColumn(name = "customer_id", referencedColumnName = "customerId")

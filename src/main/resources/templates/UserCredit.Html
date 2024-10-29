@@ -23,15 +23,46 @@
             <th>Name</th>
             <th>Credit Amount</th>
             <th>Current Price</th>
+            <th>Actions</th>
         </tr>
         </thead>
         <tbody id="wallet-articles">
-        <tr><td colspan="5">Loading articles and credit...</td></tr>
+        <tr><td colspan="7">Loading articles and credit...</td></tr>
         </tbody>
     </table>
 
     <div class="mt-4">
         <a href="/UserMenu.html" class="btn btn-primary">Back to User Menu</a>
+    </div>
+</div>
+
+<!-- Modal for transaction -->
+<div class="modal fade" id="transactionModal" tabindex="-1" role="dialog" aria-labelledby="transactionModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="transactionModalLabel">Transaction</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="transaction-form">
+                    <div class="form-group">
+                        <label for="crypto-amount">Amount</label>
+                        <input type="number" class="form-control" id="crypto-amount" min="1" required>
+                    </div>
+                    <input type="hidden" id="transaction-type">
+                    <input type="hidden" id="selected-symbol">
+                    <input type="hidden" id="current-price">
+                </form>
+                <p id="transaction-info" class="text-muted"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="confirm-transaction">Confirm</button>
+            </div>
+        </div>
     </div>
 </div>
 

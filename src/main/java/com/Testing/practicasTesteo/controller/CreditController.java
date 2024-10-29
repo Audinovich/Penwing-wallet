@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +38,21 @@ public class CreditController {
 
     }
 
-    @GetMapping("/article-credit-info/{customerId}")
+
+    @PutMapping("/addEuroCredit/{customerId}")
+    public ResponseEntity<Credit> addCredit(@PathVariable Long customerId, @RequestBody Map<String, BigDecimal> request) {
+        try {
+            BigDecimal amount = request.get("amount");
+            Credit updatedCredit = creditService.addEuroCredit(customerId, amount);
+            return new ResponseEntity<>(updatedCredit, HttpStatus.OK);
+        } catch (NotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/articleCreditInfo/{customerId}")
     public ResponseEntity<List<ArticleCreditDTO>> getArticleCreditInfo(@PathVariable("customerId") Long customerId) {
         try {
             List<ArticleCreditDTO> articleCreditInfo = creditService.getArticleCreditInfoByCustomerId(customerId);
@@ -47,17 +62,24 @@ public class CreditController {
         }
     }
 
-    @PutMapping("/addCredit/{customerId}")
-    public ResponseEntity<Credit> addCredit(@PathVariable Long customerId, @RequestBody Map<String, Long> request) {
+    @PutMapping("/updateCryptoBalance/{customerId}")
+    public ResponseEntity<Credit> updateCryptoBalance(@PathVariable Long customerId, @RequestBody Map<String, Object> request) {
         try {
-            Long amount = request.get("amount");
-            Credit updatedCredit = creditService.addCredit(customerId, amount);
+            String creditType = (String) request.get("creditType");
+            //TODO REVISAR ESTO
+            BigDecimal amount = new BigDecimal(request.get("amount").toString());
+            String operation = (String) request.get("operation");
+
+            Credit updatedCredit = creditService.updateCryptoBalance(customerId, amount, creditType, operation);
             return new ResponseEntity<>(updatedCredit, HttpStatus.OK);
         } catch (NotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
 }

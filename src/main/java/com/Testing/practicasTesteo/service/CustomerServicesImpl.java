@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -74,12 +75,12 @@ public class CustomerServicesImpl implements CustomerService {
         // Crear y asociar el crédito
         Credit credit = Credit.builder()
                 .customer(savedCustomer)
-                .euro(0L)
-                .bitcoin(0L)
-                .ethereum(0L)
-                .ripple(0L)
-                .litecoin(0L)
-                .cardano(0L)
+                .euro(BigDecimal.ZERO)
+                .bitcoin(BigDecimal.ZERO)
+                .ethereum(BigDecimal.ZERO)
+                .ripple(BigDecimal.ZERO)
+                .litecoin(BigDecimal.ZERO)
+                .cardano(BigDecimal.ZERO)
                 .build();
         creditRepository.save(credit);
 
