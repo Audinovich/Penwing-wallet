@@ -89,8 +89,11 @@ public class ViewCotroller {
 
                 // Obtener el ID del cliente y almacenarlo en la sesión
                 Long customerId = authCustomer.getCustomerId();
+                String customerName = authCustomer.getName();
                 System.out.println("ID del usuario: " + customerId);
                 session.setAttribute("customer_id", customerId);
+                session.setAttribute("customer_name", customerName);
+                System.out.println("Customer name: " + customerName);
 
                 // Obtener el ID de la wallet del cliente si existe
                 Wallet wallet = authCustomer.getWallet();

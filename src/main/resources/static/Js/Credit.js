@@ -74,9 +74,6 @@ document.getElementById('confirm-transaction').addEventListener('click', functio
     const amount = parseFloat(document.getElementById('crypto-amount').value);
     const type = document.getElementById('transaction-type').value;
     const symbol = document.getElementById('selected-symbol').value;
-    const currentPrice = parseFloat(document.getElementById('current-price').value);
-    const euroBalance = parseFloat(document.getElementById('euro-value').innerText);
-
 
     confirmTransaction(amount, type, symbol);
 });
@@ -84,21 +81,12 @@ document.getElementById('confirm-transaction').addEventListener('click', functio
 function confirmTransaction(amount, type, symbol) {
     const customerId = document.getElementById('customer_id').value;
 
-    // Logs de los valores individuales antes de construir el JSON
-    console.log("Customer ID:", customerId);
-    console.log("Amount:", amount);
-    console.log("Credit Type (Symbol):", symbol);
-    console.log("Operation Type:", type);
-
     const transactionData = {
         customerId: customerId,
         amount: amount,
         creditType: symbol,
         operation: type
     };
-
-    // Log del JSON final que se enviará
-    console.log("Transaction Data JSON:", JSON.stringify(transactionData));
 
     fetch(`http://localhost:8080/credit/updateCryptoBalance/${customerId}`, {
         method: 'PUT',
@@ -115,10 +103,49 @@ function confirmTransaction(amount, type, symbol) {
     })
     .then(data => {
         alert('Transaction successful!');
-        // Lógica para recargar artículos y créditos
-        window.location.reload(); // Recarga la página para reflejar cambios
+        window.location.reload();
     })
     .catch(error => {
         alert('Error: ' + error.message);
     });
 }
+
+function openCreditModal() {
+    $('#creditModal').modal('show');
+}
+
+document.getElementById('confirm-credit-load').addEventListener('click', function() {
+    const amount = parseFloat(document.getElementById('credit-amount').value);
+    const customerId = document.getElementById('customer_id').value;
+
+    if (isNaN(amount) || amount <= 0) {
+        alert("Por favor, ingrese un monto válido.");
+        return;
+    }
+
+    const creditData = {
+        amount: amount
+    };
+
+    fetch(`http://localhost:8080/credit/addEuroCredit/${customerId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(creditData)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error al cargar crédito');
+        }
+        return response.json();
+    })
+    .then(data => {
+        alert('Crédito cargado exitosamente!');
+        $('#creditModal').modal('hide');
+        window.location.reload();
+    })
+    .catch(error => {
+        alert('Error: ' + error.message);
+    });
+});

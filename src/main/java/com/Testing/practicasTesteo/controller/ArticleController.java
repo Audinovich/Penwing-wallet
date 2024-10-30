@@ -116,10 +116,10 @@ public class ArticleController {
     }
 
     @GetMapping("/fetch-crypto")
-    public ResponseEntity<List<Article>> fetchCryptoData(@RequestParam(value = "mock", defaultValue = "true") boolean mock) {
+    public ResponseEntity<List<Article>> fetchCryptoData() {
         try {
 
-            List<Article> cryptoData = articleService.fetchCryptoData(mock);
+            List<Article> cryptoData = articleService.fetchCryptoData();
             articleService.saveArticles(cryptoData);
             return new ResponseEntity<>(cryptoData, HttpStatus.OK);
         } catch (IOException e) {

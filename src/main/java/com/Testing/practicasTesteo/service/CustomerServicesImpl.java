@@ -75,12 +75,12 @@ public class CustomerServicesImpl implements CustomerService {
         // Crear y asociar el crédito
         Credit credit = Credit.builder()
                 .customer(savedCustomer)
-                .euro(BigDecimal.ZERO)
-                .bitcoin(BigDecimal.ZERO)
-                .ethereum(BigDecimal.ZERO)
-                .ripple(BigDecimal.ZERO)
-                .litecoin(BigDecimal.ZERO)
-                .cardano(BigDecimal.ZERO)
+                .euro(0.0)
+                .bitcoin(0.0)
+                .ethereum(0.0)
+                .ripple(0.0)
+                .litecoin(0.0)
+                .cardano(0.0)
                 .build();
         creditRepository.save(credit);
 

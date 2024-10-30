@@ -54,6 +54,11 @@ public class TransactionsServiceImpl implements TransactionService {
     }
 
     @Override
+    public List<Transactions> getAllTransactionsByCustomerId(Long customerId) {
+        return List.of();
+    }
+
+    @Override
     public Transactions saveTransaction(Transactions transaction) {
         try {
             return transactionsRepository.save(transaction);

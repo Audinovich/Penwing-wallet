@@ -43,3 +43,11 @@ form button {
 form button:hover {
     background: #4cae4c;
 }
+#welcome-message {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 20px;
+    color: #333;
+    white-space: nowrap; /* Evita que el texto se divida en varias líneas */
+
+}

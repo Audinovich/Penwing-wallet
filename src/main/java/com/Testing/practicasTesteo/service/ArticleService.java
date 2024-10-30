@@ -17,6 +17,6 @@ public interface ArticleService {
     boolean deleteAllArticles();
     boolean deleteArticleById(long id);
     List<Article> getMockCryptos() throws IOException;
-    List<Article> fetchCryptoData(boolean mock) throws IOException;;
+    List<Article> fetchCryptoData() throws IOException;;
     List<Article> getArticlesByCustomerId(Long customerId) throws ArticleFetchException;
 }

@@ -12,9 +12,9 @@ import java.util.List;
 public interface CreditService {
     List<Credit> getAllCreditsByCustomerId(Long customerId) throws ArticleFetchException;
 
-    Credit updateCryptoBalance(Long customerId, BigDecimal amount, String creditType, String operation) throws IOException;
+    Credit updateCryptoBalance(Long customerId, Double amount, String creditType, String operation) throws IOException;
 
     List<ArticleCreditDTO> getArticleCreditInfoByCustomerId(Long customerId) throws ArticleFetchException;
 
-    Credit addEuroCredit(Long customerId, BigDecimal amount);
+    Credit addEuroCredit(Long customerId, Double amount);
 }

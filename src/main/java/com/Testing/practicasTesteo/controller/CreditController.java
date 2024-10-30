@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/credit")
@@ -40,9 +41,9 @@ public class CreditController {
 
 
     @PutMapping("/addEuroCredit/{customerId}")
-    public ResponseEntity<Credit> addCredit(@PathVariable Long customerId, @RequestBody Map<String, BigDecimal> request) {
+    public ResponseEntity<Credit> addCredit(@PathVariable Long customerId, @RequestBody Map<String, Double> request) {
         try {
-            BigDecimal amount = request.get("amount");
+            Double amount = request.get("amount");
             Credit updatedCredit = creditService.addEuroCredit(customerId, amount);
             return new ResponseEntity<>(updatedCredit, HttpStatus.OK);
         } catch (NotFoundException e) {
@@ -67,7 +68,7 @@ public class CreditController {
         try {
             String creditType = (String) request.get("creditType");
             //TODO REVISAR ESTO
-            BigDecimal amount = new BigDecimal(request.get("amount").toString());
+            Double amount = ((Number) request.get("amount")).doubleValue();
             String operation = (String) request.get("operation");
 
             Credit updatedCredit = creditService.updateCryptoBalance(customerId, amount, creditType, operation);

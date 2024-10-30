@@ -8,9 +8,8 @@
 </head>
 <body>
 <div class="container">
-    <h1 class="my-4">Welcome, <span th:text="${customerName}">User</span>!</h1>
 
-    <h2>Your Wallet: <span id="euro-value">0.00</span> €</h2>
+    <h2>Your Wallet: <span id="euro-value">0.00</span> € <button class="btn btn-primary btn-sm ml-2" onclick="openCreditModal()">Cargar Crédito</button></h2>
     <input type="hidden" id="wallet_id" th:value="${session.wallet_id}">
     <input type="hidden" id="customer_id" th:value="${session.customer_id}">
 
@@ -32,7 +31,7 @@
     </table>
 
     <div class="mt-4">
-        <a href="/UserMenu.html" class="btn btn-primary">Back to User Menu</a>
+        <a href="/Index.html" class="btn btn-primary">Back to User Menu</a>
     </div>
 </div>
 
@@ -61,6 +60,32 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary" id="confirm-transaction">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Credit Load -->
+<div class="modal fade" id="creditModal" tabindex="-1" role="dialog" aria-labelledby="creditModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="creditModalLabel">Cargar Crédito</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="credit-form">
+                    <div class="form-group">
+                        <label for="credit-amount">Monto a cargar (€)</label>
+                        <input type="number" class="form-control" id="credit-amount" min="1" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" id="confirm-credit-load">Confirmar</button>
             </div>
         </div>
     </div>

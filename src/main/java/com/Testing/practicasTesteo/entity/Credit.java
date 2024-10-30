@@ -25,12 +25,12 @@ public class Credit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long creditId;
 
-    private BigDecimal euro;
-    private BigDecimal bitcoin;
-    private BigDecimal ethereum;
-    private BigDecimal ripple;
-    private BigDecimal litecoin;
-    private BigDecimal cardano;
+    private Double euro;
+    private Double bitcoin;
+    private Double ethereum;
+    private Double ripple;
+    private Double litecoin;
+    private Double cardano;
 
     @ManyToOne
     @JoinColumn(name = "customer_id", referencedColumnName = "customerId")

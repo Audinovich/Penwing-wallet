@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Penwing</title>
     <link rel="stylesheet" href="css/main.css">
     <link rel="icon" href="/Img/icoPenwing.png" type="image/png">
+    <input type="hidden" id="customer_name" th:value="${session.customer_name}">
 </head>
 <body>
 <div class="menu">
@@ -28,6 +29,9 @@
         </div>
     </div>
 </div>
+<div id="welcome-message" th:text="'Wellcome, ' + ${session.customer_name} + '!'"></div>
+
 <script src="Js/Menu.js"></script>
+<script src="Js/Wellcome.js"></script>
 </body>
 </html>

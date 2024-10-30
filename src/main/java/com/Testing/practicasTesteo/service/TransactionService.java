@@ -14,5 +14,7 @@ public interface TransactionService {
 
     List<Transactions> getTransactionsByDate(@RequestParam("transactionDate") LocalDateTime data);
 
+    List<Transactions> getAllTransactionsByCustomerId(Long customerId);
+
     Transactions saveTransaction(Transactions transaction);
 }

@@ -14,6 +14,9 @@ public class ArticleCreditDTO {
         private String name;
         private String image;
         private Double creditAmount;
+        private Double currentPrice;
+
+
 }
 
 

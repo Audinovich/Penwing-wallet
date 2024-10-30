@@ -9,6 +9,7 @@ import com.Testing.practicasTesteo.respository.ArticleRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +29,9 @@ public class ArticleServiceImpl implements ArticleService {
     @Autowired
     private ArticleRepository articleRepository;
 
+    @Value("${mockdata}")
+    Boolean mockData;
+
     @Override
     public List<Article> getAllArticles() throws ArticleNotFoundException, ArticleFetchException {
         try {
@@ -35,6 +39,8 @@ public class ArticleServiceImpl implements ArticleService {
             if (articleList.isEmpty()) {
                 throw new ArticleNotFoundException("No data found");
             }
+
+
             return articleList;
         } catch (DataAccessException e) {
             throw new ArticleFetchException("Error accessing article data: " + e.getMessage(), e);
@@ -114,8 +120,8 @@ public class ArticleServiceImpl implements ArticleService {
     }
     // ternario para ver si consumo MOCK o API
     @Override
-    public List<Article> fetchCryptoData(boolean mock) throws IOException {
-        return mock ? getMockCryptos() : fetchCryptoDataFromAPI();
+    public List<Article> fetchCryptoData() throws IOException {
+        return mockData ? getMockCryptos() : fetchCryptoDataFromAPI();
     }
 
     @Override
