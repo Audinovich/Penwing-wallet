@@ -15,6 +15,7 @@ public class ArticleCreditDTO {
         private String image;
         private Double creditAmount;
         private Double currentPrice;
+        private Double euroBalance;
 
 
 }

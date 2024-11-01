@@ -31,26 +31,21 @@ public class CreditServiceImpl implements CreditService {
     @Autowired
     ArticleServiceImpl articleServiceimpl;
 
-
+    //TODO REVISAR ESTE METODO PARA DEJAR CLARISIMA LA LOGICA
     @Override
     public List<ArticleCreditDTO> getArticleCreditInfoByCustomerId(Long customerId) throws ArticleFetchException {
+        //PARA RESOLVER POSIBLES EXCEPCIONES
         try {
             // Obtener créditos del cliente
             List<Credit> credits = creditRepository.getAllCreditsByCustomerId(customerId);
             List<Article> articles = articleService.getAllArticles();
 
-            Map<String, Double> creditMap = new HashMap<>();
-
-            for (Credit credit : credits) {
-                creditMap.merge("bitcoin", credit.getBitcoin() != null ? credit.getBitcoin() : 0.0, Double::sum);
-                creditMap.merge("ethereum", credit.getEthereum() != null ? credit.getEthereum() : 0.0, Double::sum);
-                creditMap.merge("ripple", credit.getRipple() != null ? credit.getRipple() : 0.0, Double::sum);
-                creditMap.merge("litecoin", credit.getLitecoin() != null ? credit.getLitecoin() : 0.0, Double::sum);
-                creditMap.merge("cardano", credit.getCardano() != null ? credit.getCardano(): 0.0, Double::sum);
-                creditMap.merge("euro", credit.getEuro() != null ? credit.getEuro() : 0.0, Double::sum);
-            }
+            // SE CREA UN ARTICLECREDITMAP = AL METODO AUXILIAR QUE YA TIENE UN NEW Y SE LE PASAN LOS CREDITOS COMO PARAMETRO por que asi lo exige
+            Map<String, Double> articleCreditMap = buildCreditMap(credits);
 
             List<ArticleCreditDTO> articleCreditDTOs = new ArrayList<>();
+
+            Double euroBalance = credits.isEmpty() ? 0.0 : credits.get(0).getEuro();
 
             for (Article article : articles) {
                 ArticleCreditDTO dto = new ArticleCreditDTO();
@@ -60,10 +55,10 @@ public class CreditServiceImpl implements CreditService {
                 dto.setCurrentPrice(article.getCurrentPrice());
 
 
-                // Obtener el crédito correspondiente del mapa
-                Double creditAmount = creditMap.getOrDefault(article.getSymbol().toLowerCase(), 0.0);
+                // Obtener el crédito correspondiente del mapa // buscando por el nombre de la lsitade creditmap y asignando un valor
+                Double creditAmount = articleCreditMap.getOrDefault(article.getSymbol().toLowerCase(), 0.0);
                 dto.setCreditAmount(creditAmount);
-
+                dto.setEuroBalance(euroBalance);
                 articleCreditDTOs.add(dto);
             }
 
@@ -75,6 +70,28 @@ public class CreditServiceImpl implements CreditService {
             throw new RuntimeException("Unexpected error: " + e.getMessage(), e);
         }
     }
+
+    // Método AUXILIAR para construir el creditMap y le asigna
+    private Map<String, Double> buildCreditMap(List<Credit> credits) {
+        //devuelve un objeto de tipo MAP
+        Map<String, Double> creditMap = new HashMap<>();
+           //cryptos/creditos
+
+        //rellena los campos valor con los credit para cada una de las crypto
+        if (credits != null) {
+            for (Credit credit : credits) {
+                creditMap.put("bitcoin", credit.getBitcoin() != null ? credit.getBitcoin() : 0.0);
+                creditMap.put("ethereum", credit.getEthereum() != null ? credit.getEthereum() : 0.0);
+                creditMap.put("ripple", credit.getRipple() != null ? credit.getRipple() : 0.0);
+                creditMap.put("litecoin", credit.getLitecoin() != null ? credit.getLitecoin() : 0.0);
+                creditMap.put("cardano", credit.getCardano() != null ? credit.getCardano() : 0.0);
+                creditMap.put("euro", credit.getEuro() != null ? credit.getEuro() : 0.0);
+            }
+        }
+
+        return creditMap;
+    }
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)

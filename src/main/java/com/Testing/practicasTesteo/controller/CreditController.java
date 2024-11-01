@@ -67,7 +67,7 @@ public class CreditController {
     public ResponseEntity<Credit> updateCryptoBalance(@PathVariable Long customerId, @RequestBody Map<String, Object> request) {
         try {
             String creditType = (String) request.get("creditType");
-            //TODO REVISAR ESTO
+
             Double amount = ((Number) request.get("amount")).doubleValue();
             String operation = (String) request.get("operation");
 

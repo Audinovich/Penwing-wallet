@@ -3,18 +3,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const customerId = document.getElementById('customer_id').value;
 
     if (walletId) {
-        Promise.all([
-            fetch(`http://localhost:8080/credit/getCreditById/${customerId}`),
-            fetch(`http://localhost:8080/article/getAllArticles`)
-        ])
-        .then(responses => Promise.all(responses.map(response => {
+        // Llamada a la API con el customerId correctamente
+        fetch(`http://localhost:8080/credit/articleCreditInfo/${customerId}`)
+        .then(response => {
             if (!response.ok) {
                 throw new Error('No se pudo obtener los datos');
             }
             return response.json();
-        })))
-        .then(([credit, articles]) => {
-            displayArticlesAndCredit(articles, credit);
+        })
+        .then(articleCreditInfo => {
+            displayArticlesAndCredit(articleCreditInfo);
         })
         .catch(error => {
             console.error('Error al obtener los datos:', error);
@@ -24,27 +22,26 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-function displayArticlesAndCredit(articles, credit) {
+function displayArticlesAndCredit(articleCreditInfo) {
     const walletArticlesDiv = document.getElementById('wallet-articles');
     const euroValueElement = document.getElementById('euro-value');
     walletArticlesDiv.innerHTML = '';
     let totalEuros = 0;
 
-    const creditInfo = credit[0];
-    if (creditInfo) {
-        totalEuros = creditInfo.euro || 0;
+    // Si hay información, tomamos el euroBalance
+    if (articleCreditInfo.length > 0) {
+        totalEuros = articleCreditInfo[0].euroBalance || 0; // Aquí se toma el euroBalance del primer artículo
     }
 
-    articles.forEach((article, index) => {
-        const creditAmount = creditInfo ? (creditInfo[article.symbol] || 0) : 'N/A';
-
+    // Itera sobre cada artículo y agrega su información
+    articleCreditInfo.forEach((article, index) => {
         const articleRow = `
             <tr>
                 <td>${index + 1}</td>
                 <td>${article.symbol}</td>
                 <td><img src="${article.image}" alt="${article.name}" width="50"></td>
                 <td>${article.name}</td>
-                <td>${creditAmount}</td>
+                <td>${article.creditAmount || 'N/A'}</td>
                 <td>${article.currentPrice || 'N/A'}</td>
                 <td>
                     <button class="btn btn-success btn-sm" onclick="openTransactionModal('buy', '${article.symbol}', ${article.currentPrice})">Buy</button>

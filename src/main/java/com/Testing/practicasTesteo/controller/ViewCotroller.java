@@ -74,6 +74,8 @@ public class ViewCotroller {
     public String login() {
         return "Login";
     }
+    @RequestMapping("/UserMenu.html")
+    public String userMenu(){return "UserMenu";}
 
     //validacion de datos con base de datos
     @PostMapping("/submit-login")
@@ -104,10 +106,10 @@ public class ViewCotroller {
                 } else {
                     System.out.println("El cliente no tiene una wallet asociada.");
                     model.addAttribute("error", "No tienes una wallet asociada. Contacta al soporte.");
-                    return "Index"; // Puedes redirigir a una página de error si no tiene wallet.
+                    return "Index";
                 }
 
-                return "UserMenu";  // Página a la que redirigir después del login exitoso
+                return "UserMenu";
 
             } else {
                 System.out.println("INGRESO FALLIDO - email: " + email);
