@@ -33,18 +33,19 @@ public class ArticleServiceImpl implements ArticleService {
     @Value("${mockdata}")
     Boolean mockData;
 
-    /*
+    @Value("$spring.jpa.hibernate.ddl-auto")
+    String bbddValue;
+
+
+    private static final String CREATE = "create";
+
     @PostConstruct
     public void loadMockDataIfNeeded() {
-        if (mockData) {
-            List<Article> mockArticles = getMockCryptos();
-            // Guarda los datos mock si no existen ya
-            if (articleRepository.count() == 0) {
-                articleRepository.saveAll(mockArticles);
-            }
+        if (bbddValue.toLowerCase().equals(CREATE) && mockData) {
+            getMockCryptos();
         }
     }
-   */
+
     @Override
     public List<Article> getAllArticles() throws ArticleNotFoundException, ArticleFetchException {
         try {
