@@ -1,6 +1,8 @@
 package com.Testing.practicasTesteo.service;
 
 
+import com.Testing.practicasTesteo.dto.CustomerDTO;
+import com.Testing.practicasTesteo.dto.ResponseDTO;
 import com.Testing.practicasTesteo.dto.TransactionsDTO;
 import com.Testing.practicasTesteo.entity.Customer;
 import com.Testing.practicasTesteo.entity.Transactions;
@@ -66,32 +68,48 @@ public class TransactionsServiceImpl implements TransactionService {
 
 
     @Override
-    public Transactions saveTransaction(TransactionsDTO transactionDTO) {
+    public ResponseDTO saveTransaction(TransactionsDTO transactionDTO) {
         try {
             // Cargar el cliente desde la base de datos usando el customerId del DTO
             Customer customer = customerRepository.findById(transactionDTO.getCustomerId())
                     .orElseThrow(() -> new NotFoundException("Customer not found"));
 
-            // Establecer la fecha de la transacción si no se proporciona
-            LocalDateTime transactionDate = LocalDateTime.now(); // Establece la fecha y hora actuales
+            // Establecer la fecha de la transacción
+            LocalDateTime transactionDate = LocalDateTime.now();
 
-            // Generar la descripción de la transacción si no se proporciona
+            // Generar la descripción
             String description = transactionDTO.getOperation().equals("buy")
                     ? "Compra de " + transactionDTO.getCreditType() + " por " + transactionDTO.getAmount() + " euros."
                     : "Venta de " + transactionDTO.getCreditType() + " por " + transactionDTO.getAmount() + " euros.";
 
-            // Crear la transacción con los datos del DTO
+            // Crear la transacción
             Transactions transaction = Transactions.builder()
-                    .transactionDate(transactionDate) // Establece la fecha y hora actuales
-                    .description(description)          // Asigna la descripción generada
-                    .amount(transactionDTO.getAmount()) // Asigna el monto de la transacción
-                    .creditType(transactionDTO.getCreditType()) // Asigna el tipo de crédito
-                    .operation(transactionDTO.getOperation()) // Asigna la operación (compra/venta)
-                    .customer(customer)                // Asigna el cliente cargado
+                    .transactionDate(transactionDate)
+                    .description(description)
+                    .amount(transactionDTO.getAmount())
+                    .creditType(transactionDTO.getCreditType())
+                    .operation(transactionDTO.getOperation())
+                    .customer(customer)
                     .build();
 
-            // Guardar la transacción en la base de datos
-            return transactionsRepository.save(transaction);
+            // Guardar la transacción
+            Transactions savedTransaction = transactionsRepository.save(transaction);
+
+            // Crear la respuesta
+            ResponseDTO responseDTO = new ResponseDTO();
+            responseDTO.setTransactionId(savedTransaction.getTransactionId());
+            responseDTO.setTransactionDate(savedTransaction.getTransactionDate());
+            responseDTO.setDescription(savedTransaction.getDescription());
+            responseDTO.setAmount(savedTransaction.getAmount());
+            responseDTO.setCreditType(savedTransaction.getCreditType());
+            responseDTO.setOperation(savedTransaction.getOperation());
+
+            // Inyectar solo el customerId
+            CustomerDTO customerDTO = new CustomerDTO();
+            customerDTO.setCustomerId(savedTransaction.getCustomer().getCustomerId());
+            responseDTO.setCustomer(customerDTO);
+
+            return responseDTO;
 
         } catch (DataAccessException e) {
             throw new NotSavedException("Error saving transaction: " + e.getMessage(), e);

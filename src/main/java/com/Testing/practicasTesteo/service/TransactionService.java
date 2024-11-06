@@ -1,6 +1,7 @@
 package com.Testing.practicasTesteo.service;
 
 
+import com.Testing.practicasTesteo.dto.ResponseDTO;
 import com.Testing.practicasTesteo.dto.TransactionsDTO;
 import com.Testing.practicasTesteo.entity.Transactions;
 import com.Testing.practicasTesteo.exceptions.NotFoundException;
@@ -17,5 +18,5 @@ public interface TransactionService {
 
     List<Transactions> getAllTransactionsByCustomerId(Long customerId);
 
-    Transactions saveTransaction(TransactionsDTO transactionsDTO);
+    ResponseDTO saveTransaction(TransactionsDTO transactionsDTO);
 }

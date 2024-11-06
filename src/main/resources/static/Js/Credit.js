@@ -89,6 +89,7 @@ function confirmTransaction(amount, type, symbol) {
         description: description
     };
 
+    // Primero actualizamos el balance
     fetch(`http://localhost:8080/credit/updateCryptoBalance/${customerId}`, {
         method: 'PUT',
         headers: {
@@ -98,13 +99,31 @@ function confirmTransaction(amount, type, symbol) {
     })
     .then(response => {
         if (!response.ok) {
-            throw new Error('Error durante la transacción');
+            throw new Error('Error durante la transacción (actualización del balance)');
         }
         return response.json();
     })
-    .then(data => {
+    .then(balanceData => {
+        alert('Balance actualizado exitosamente');
+
+        // Ahora guardamos la transacción
+        return fetch(`http://localhost:8080/transaction/saveTransaction`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(transactionData)
+        });
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error al guardar la transacción');
+        }
+        return response.json();
+    })
+    .then(transactionData => {
         alert('Transacción realizada con éxito');
-        window.location.reload();
+        window.location.reload(); // Recargar para ver los cambios
     })
     .catch(error => {
         alert('Error: ' + error.message);
