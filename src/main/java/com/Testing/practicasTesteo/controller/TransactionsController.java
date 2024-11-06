@@ -1,6 +1,7 @@
 package com.Testing.practicasTesteo.controller;
 
 
+import com.Testing.practicasTesteo.dto.TransactionsDTO;
 import com.Testing.practicasTesteo.entity.Article;
 import com.Testing.practicasTesteo.entity.Transactions;
 import com.Testing.practicasTesteo.exceptions.ArticleNotFoundException;
@@ -48,15 +49,19 @@ public class TransactionsController {
     }
 
     @PutMapping("/saveTransaction")
-    public ResponseEntity<Transactions> saveTransaction(@RequestBody Transactions transaction) throws NotSavedException {
-        try{
-            Transactions savedTransaction = transactionService.saveTransaction(transaction);
-            return new ResponseEntity<>(transaction,HttpStatus.CREATED);
+    public ResponseEntity<Transactions> saveTransaction(@RequestBody TransactionsDTO transactionsDTO) {
+        try {
+            // Llama al servicio para guardar la transacción
+            Transactions savedTransaction = transactionService.saveTransaction(transactionsDTO);
+
+            // Devuelve la transacción guardada con el ID y otros detalles actualizados
+            return new ResponseEntity<>(savedTransaction, HttpStatus.CREATED);
         } catch (NotSavedException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
 }

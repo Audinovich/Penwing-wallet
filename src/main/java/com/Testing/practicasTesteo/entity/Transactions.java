@@ -26,6 +26,12 @@ public class Transactions {
 
     String description;
 
+    private Double amount;
+
+    private String creditType;
+
+    private String operation;
+
     @ManyToOne
     @JoinColumn(name = "customer_id", referencedColumnName = "customerId")
     @JsonManagedReference

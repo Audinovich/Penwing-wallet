@@ -78,11 +78,15 @@ document.getElementById('confirm-transaction').addEventListener('click', functio
 function confirmTransaction(amount, type, symbol) {
     const customerId = document.getElementById('customer_id').value;
 
+    // Generamos la descripción de la transacción
+    const description = `${type === 'buy' ? 'Compra' : 'Venta'} de ${symbol} por ${amount} euros.`;
+
     const transactionData = {
         customerId: customerId,
         amount: amount,
         creditType: symbol,
-        operation: type
+        operation: type,
+        description: description
     };
 
     fetch(`http://localhost:8080/credit/updateCryptoBalance/${customerId}`, {
@@ -94,12 +98,12 @@ function confirmTransaction(amount, type, symbol) {
     })
     .then(response => {
         if (!response.ok) {
-            throw new Error('Error during transaction');
+            throw new Error('Error durante la transacción');
         }
         return response.json();
     })
     .then(data => {
-        alert('Transaction successful!');
+        alert('Transacción realizada con éxito');
         window.location.reload();
     })
     .catch(error => {

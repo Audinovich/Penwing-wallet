@@ -1,6 +1,7 @@
 package com.Testing.practicasTesteo.service;
 
 
+import com.Testing.practicasTesteo.dto.TransactionsDTO;
 import com.Testing.practicasTesteo.entity.Transactions;
 import com.Testing.practicasTesteo.exceptions.NotFoundException;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,5 +17,5 @@ public interface TransactionService {
 
     List<Transactions> getAllTransactionsByCustomerId(Long customerId);
 
-    Transactions saveTransaction(Transactions transaction);
+    Transactions saveTransaction(TransactionsDTO transactionsDTO);
 }
