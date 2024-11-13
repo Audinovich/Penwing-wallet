@@ -2,6 +2,7 @@ package com.Testing.practicasTesteo.controller;
 
 
 import com.Testing.practicasTesteo.entity.Article;
+import com.Testing.practicasTesteo.exceptions.ArticleFetchException;
 import com.Testing.practicasTesteo.exceptions.ArticleNotFoundException;
 import com.Testing.practicasTesteo.exceptions.NotSavedException;
 import com.Testing.practicasTesteo.service.ArticleService;
@@ -21,29 +22,30 @@ public class ArticleController {
     ArticleService articleService;
 
     @GetMapping("/getAllArticles")
-    public ResponseEntity<List<Article>> getAllArticles() {
+    public ResponseEntity<?> getAllArticles() {
         try {
             List<Article> articlesFound = articleService.getAllArticles();
             return new ResponseEntity<>(articlesFound, HttpStatus.OK);
         } catch (ArticleNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }
 
     @GetMapping("/getArticleById/{articleId}")
-    public ResponseEntity<Article> getArticleById(@PathVariable("articleId") long articleId) {
+    public ResponseEntity<?> getArticleById(@PathVariable("articleId") long articleId) throws ArticleFetchException {
         try {
             Article articleFoundById = articleService.getArticleById(articleId);
             return new ResponseEntity<>(articleFoundById, HttpStatus.OK);
         } catch (ArticleNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
     @PostMapping("/saveArticle")
     public ResponseEntity<Article> saveArticle(@RequestBody Article article) throws NotSavedException {

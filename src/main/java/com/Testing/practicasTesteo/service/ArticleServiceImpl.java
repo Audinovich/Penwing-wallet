@@ -51,10 +51,8 @@ public class ArticleServiceImpl implements ArticleService {
         try {
             List<Article> articleList = articleRepository.findAll();
             if (articleList.isEmpty()) {
-                throw new ArticleNotFoundException("No data found");
+                throw new ArticleNotFoundException("Articles not found");
             }
-
-
             return articleList;
         } catch (DataAccessException e) {
             throw new ArticleFetchException("Error accessing article data: " + e.getMessage(), e);
@@ -62,9 +60,15 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public Article getArticleById(long id) throws ArticleNotFoundException {
-        return articleRepository.findById(id)
-                .orElseThrow(() -> new ArticleNotFoundException("Article not found with id: " + id));
+    public Article getArticleById(long id) {
+        try {
+            return articleRepository.findById(id)
+                    .orElseThrow(() -> new ArticleNotFoundException("Article not found with id: " + id));
+        } catch (ArticleNotFoundException e) {
+            throw new ArticleNotFoundException("Article not found with id: " + id);
+        } catch (Exception e) {
+            throw new RuntimeException("Internal server error: " + e.getMessage(), e);
+        }
     }
 
     @Override

@@ -5,6 +5,7 @@ import com.Testing.practicasTesteo.exceptions.ArticleNotFoundException;
 import com.Testing.practicasTesteo.exceptions.NotSavedException;
 import com.Testing.practicasTesteo.service.ArticleService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,10 +60,12 @@ class ArticleControllerTest {
 
     @Test
     void getAllArticles_ShouldReturnNotFound() throws Exception {
-        when(articleService.getAllArticles()).thenThrow(ArticleNotFoundException.class);
+        when(articleService.getAllArticles()).thenThrow(new ArticleNotFoundException("Articles not found"));
 
         mockMvc.perform(get("/article/getAllArticles"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Articles not found"));
+
     }
 
     @Test
@@ -75,11 +78,16 @@ class ArticleControllerTest {
     }
 
     @Test
+    @DisplayName("GET /article/getArticlesById/1 - Should return 404 Not Found when customer has no credits")
     void getArticleById_ShouldReturnNotFound() throws Exception {
-        when(articleService.getArticleById(anyLong())).thenThrow(ArticleNotFoundException.class);
+
+        when(articleService.getArticleById(1L))
+                .thenThrow(new ArticleNotFoundException("Article not found with id: " + 1L));
 
         mockMvc.perform(get("/article/getArticleById/1"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Article not found with id: 1"));
+
     }
 
     @Test

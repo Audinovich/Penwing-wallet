@@ -5,6 +5,7 @@ import com.Testing.practicasTesteo.entity.Article;
 import com.Testing.practicasTesteo.entity.Credit;
 import com.Testing.practicasTesteo.exceptions.ArticleFetchException;
 import com.Testing.practicasTesteo.exceptions.ArticleNotFoundException;
+import com.Testing.practicasTesteo.exceptions.CustomerNotFoundException;
 import com.Testing.practicasTesteo.exceptions.NotFoundException;
 import com.Testing.practicasTesteo.respository.CreditRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,25 +97,28 @@ public class CreditServiceImpl implements CreditService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Credit addEuroCredit(Long customerId, Double amount) {
+        try {
+            Credit credit = creditRepository.findMoneyByCustomerId(customerId)
+                    .orElseThrow(() -> new NotFoundException("Credit not found for customer with ID: " + customerId));
 
-        Credit credit = creditRepository.findMoneyByCustomerId(customerId)
-                .orElseThrow(() -> new NotFoundException("Credit not found for customer with ID: " + customerId));
+            if (credit.getEuro() == null) {
+                credit.setEuro(0.0);
+            }
+            credit.setEuro(credit.getEuro() + amount);
 
-        if (credit.getEuro() == null) {
-            credit.setEuro(0.0);
+            return creditRepository.save(credit);
+        }catch (Exception e){
+            throw new RuntimeException("Unexpected error: " + e.getMessage(), e);
         }
-        credit.setEuro(credit.getEuro() + amount);
-
-        return creditRepository.save(credit);
     }
 
 
     @Override
-    public List<Credit> getAllCreditsByCustomerId(Long customerId) throws ArticleFetchException, ArticleNotFoundException {
+    public List<Credit> getAllCreditsByCustomerId(Long customerId) throws ArticleFetchException {
         try {
             List<Credit> creditsFound = creditRepository.getAllCreditsByCustomerId(customerId);
             if (creditsFound.isEmpty()) {
-                throw new ArticleNotFoundException("No credit found");
+                throw new CustomerNotFoundException("No credit found for customer with ID: " + customerId);
             }
             return creditsFound;
         } catch (DataAccessException e) {
