@@ -64,21 +64,20 @@ public class CreditController {
     }
 
     @PutMapping("/updateCryptoBalance/{customerId}")
-    public ResponseEntity<Credit> updateCryptoBalance(@PathVariable Long customerId, @RequestBody Map<String, Object> request) {
+    public ResponseEntity<?> updateCryptoBalance(@PathVariable Long customerId, @RequestBody Map<String, Object> request)throws NotFoundException {
         try {
             String creditType = (String) request.get("creditType");
-
             Double amount = ((Number) request.get("amount")).doubleValue();
             String operation = (String) request.get("operation");
 
             Credit updatedCredit = creditService.updateCryptoBalance(customerId, amount, creditType, operation);
             return new ResponseEntity<>(updatedCredit, HttpStatus.OK);
         } catch (NotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

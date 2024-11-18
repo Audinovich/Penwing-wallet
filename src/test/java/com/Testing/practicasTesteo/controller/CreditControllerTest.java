@@ -1,9 +1,11 @@
 package com.Testing.practicasTesteo.controller;
 
+import com.Testing.practicasTesteo.dto.ArticleCreditDTO;
 import com.Testing.practicasTesteo.entity.Credit;
 import com.Testing.practicasTesteo.exceptions.CustomerNotFoundException;
 import com.Testing.practicasTesteo.exceptions.NotFoundException;
 import com.Testing.practicasTesteo.service.CreditService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,7 +16,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
@@ -101,7 +105,8 @@ class CreditControllerTest {
                 """;
         mockMvc.perform(put("/credit/addEuroCredit/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(requestBody)).andExpect(status().isInternalServerError());
+                .content(requestBody))
+                .andExpect(status().isInternalServerError());
 
     }
 
@@ -146,14 +151,97 @@ class CreditControllerTest {
         mockMvc.perform(put("/credit/addEuroCredit/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
-                .andExpect(status().isNotFound()); // Verifica que se devuelve el estado 404
+                .andExpect(status().isNotFound());
     }
 
     @Test
-    void getArticleCreditInfo() {
+    @DisplayName("GET /credit/getArticleCreditInfoShouldReturnOk")
+    void getArticleCreditInfoShouldReturnOk() throws Exception {
+
+        //creo la List de DTOs mockArticleCredits, con un solo elemento.
+        List<ArticleCreditDTO> mockArticleCredits = List.of(
+                new ArticleCreditDTO("bitcoin", "btc", "https://assets.coingecko.com/coins/images/1/large/bitcoin.png", 6.0, 63562.0, 609628.0)
+        );
+
+        when(creditService.getArticleCreditInfoByCustomerId(1L)).thenReturn(mockArticleCredits);
+
+        mockMvc.perform(get("/credit/articleCreditInfo/1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].name").value("btc"))
+                .andExpect(jsonPath("$[0].symbol").value("bitcoin"))
+                .andExpect(jsonPath("$[0].creditAmount").value(6.0))
+                .andExpect(jsonPath("$[0].image").value("https://assets.coingecko.com/coins/images/1/large/bitcoin.png"))
+                .andExpect(jsonPath("$[0].currentPrice").value(63562.0))
+                .andExpect(jsonPath("$[0].euroBalance").value(609628.0));
     }
 
     @Test
-    void updateCryptoBalance() {
+    @DisplayName("PUT /credit/updateCryptoBalanceShouldReturnOk")
+    void updateCryptoBalanceShouldReturnOk()throws Exception {
+
+        Map<String,Object> requestBody = new HashMap<>();
+        requestBody.put("creditType","bitcoin");
+        requestBody.put("amount",5.0);
+        requestBody.put("operation","buy");
+
+        Credit mockCredit = new Credit();
+        mockCredit.setBitcoin(6.0);
+
+        when(creditService.updateCryptoBalance (eq(1L), eq(5.0), eq("bitcoin"), eq("buy")))
+                .thenReturn(mockCredit);
+
+        mockMvc.perform(put("/credit/updateCryptoBalance/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(requestBody)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.bitcoin").value(6.0));
+
+    }
+
+    @Test
+    @DisplayName("PUT /credit/updateCryptoBalanceShouldReturnNotFound")
+    void updateCryptoBalanceShouldReturnNotFound()throws Exception {
+
+        Map<String,Object> requestBody = new HashMap<>();
+        requestBody.put("creditType","bitcoin");
+        requestBody.put("amount",5.0);
+        requestBody.put("operation","buy");
+
+        Credit mockCredit = new Credit();
+        mockCredit.setBitcoin(6.0);
+
+        when(creditService.updateCryptoBalance (eq(1L), eq(5.0), eq("bitcoin"), eq("buy")))
+                .thenThrow(new NotFoundException("Credit not found for customer with ID:" + 1L));
+
+        mockMvc.perform(put("/credit/updateCryptoBalance/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(requestBody)))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(containsString("Credit not found for customer with ID:" + 1L)));
+
+    }
+
+    @Test
+    @DisplayName("PUT /credit/updateCryptoBalanceShouldReturnInternalServerError")
+    void updateCryptoBalanceShouldReturnInternalServerError()throws Exception {
+
+        Map<String,Object> requestBody = new HashMap<>();
+        requestBody.put("creditType","bitcoin");
+        requestBody.put("amount",5.0);
+        requestBody.put("operation","buy");
+
+        Credit mockCredit = new Credit();
+        mockCredit.setBitcoin(6.0);
+
+        when(creditService.updateCryptoBalance (eq(1L), eq(5.0), eq("bitcoin"), eq("buy")))
+                .thenThrow(new Exception("Credit not found for customer with ID:" + 1L));
+
+        mockMvc.perform(put("/credit/updateCryptoBalance/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(requestBody)))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().string(containsString("Credit not found for customer with ID:" + 1L)));
+
     }
 }

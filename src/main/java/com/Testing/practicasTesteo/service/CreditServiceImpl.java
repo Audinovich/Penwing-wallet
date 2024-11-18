@@ -4,7 +4,6 @@ import com.Testing.practicasTesteo.dto.ArticleCreditDTO;
 import com.Testing.practicasTesteo.entity.Article;
 import com.Testing.practicasTesteo.entity.Credit;
 import com.Testing.practicasTesteo.exceptions.ArticleFetchException;
-import com.Testing.practicasTesteo.exceptions.ArticleNotFoundException;
 import com.Testing.practicasTesteo.exceptions.CustomerNotFoundException;
 import com.Testing.practicasTesteo.exceptions.NotFoundException;
 import com.Testing.practicasTesteo.respository.CreditRepository;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -76,7 +74,7 @@ public class CreditServiceImpl implements CreditService {
     private Map<String, Double> buildCreditMap(List<Credit> credits) {
         //devuelve un objeto de tipo MAP
         Map<String, Double> creditMap = new HashMap<>();
-           //cryptos/creditos
+        //cryptos/creditos
 
         //rellena los campos valor con los credit para cada una de las crypto
         if (credits != null) {
@@ -107,7 +105,7 @@ public class CreditServiceImpl implements CreditService {
             credit.setEuro(credit.getEuro() + amount);
 
             return creditRepository.save(credit);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException("Unexpected error: " + e.getMessage(), e);
         }
     }
@@ -132,17 +130,17 @@ public class CreditServiceImpl implements CreditService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Credit updateCryptoBalance(Long customerId, Double amount, String creditType, String operation) throws IOException {
-        // Buscamos el crédito del cliente
+
         Credit credit = creditRepository.findMoneyByCustomerId(customerId)
                 .orElseThrow(() -> new NotFoundException("Credit not found for customer with ID: " + customerId));
 
-        // Obtener el precio de la criptomoneda desde la API mock
+
         Double price = fetchCryptoPriceFromMockAPI(creditType);
 
-        // Lógica para actualizar el balance de criptomonedas o euros
+
         switch (operation.toLowerCase()) {
             case "buy":
-                // Verifica si hay suficiente saldo en euros
+
                 if (credit.getEuro().compareTo(amount * price) < 0) {
                     throw new IllegalArgumentException("Not enough euros to complete the purchase.");
                 }
@@ -158,7 +156,7 @@ public class CreditServiceImpl implements CreditService {
                     throw new IllegalArgumentException("Not enough crypto to complete the sale.");
                 }
                 // Aumentar euros y reducir el balance de la criptomoneda específica
-                credit.setEuro(credit.getEuro()+(amount*(price)));
+                credit.setEuro(credit.getEuro() + (amount * (price)));
                 updateSpecificCryptoBalance(credit, creditType, amount, false); // Reducir cantidad
                 break;
 

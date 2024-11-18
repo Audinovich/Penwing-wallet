@@ -160,8 +160,8 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public List<Article> getMockCryptos() {
-        List<Article> existingArticles = articleRepository.findAll(); // Obtener artículos existentes directamente de la BDD
-        List<Article> newCryptos = new ArrayList<>(); // Lista de artículos nuevos a añadir
+        List<Article> existingArticles = articleRepository.findAll();
+        List<Article> newCryptos = new ArrayList<>();
 
 
         newCryptos.add(new Article("bitcoin", "btc", "https://assets.coingecko.com/coins/images/1/large/bitcoin.png", 63562, new BigInteger("850000000000"), new BigInteger("50000000000"), 46000, 44000, -1000, -2.17, new BigInteger("10000000000"), -1.17, new BigInteger("18000000"), new BigInteger("21000000"), 69000, -34.83, "2021-11-10T00:00:00Z", "2024-10-12T20:36:50Z"));

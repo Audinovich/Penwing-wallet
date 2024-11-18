@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/customer")
@@ -33,7 +32,7 @@ public class CustomerController {
 
     }
 
-    @GetMapping("/getCustomerById/{id}")
+    @GetMapping("/getCustomerById/{customerId}")
     public ResponseEntity<Customer> getCustomerById(@PathVariable("customerId") long customerId) {
 
         try {
@@ -62,8 +61,8 @@ public class CustomerController {
         }
     }
 
-    @PutMapping("/updateCustomer/{id}")
-    public ResponseEntity<Customer> updateCustomer(@RequestBody Customer customer, @PathVariable("id") long id) {
+    @PutMapping("/updateCustomer/{customerId}")
+    public ResponseEntity<Customer> updateCustomer(@RequestBody Customer customer, @PathVariable("customerId") long id) {
         try {
             Customer updatedCustomer = customerService.updateCustomerById(customer, id);
             return new ResponseEntity<>(updatedCustomer, HttpStatus.OK);
