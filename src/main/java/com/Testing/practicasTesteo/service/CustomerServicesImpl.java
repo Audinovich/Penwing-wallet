@@ -6,15 +6,17 @@ import com.Testing.practicasTesteo.entity.Customer;
 import com.Testing.practicasTesteo.entity.Wallet;
 import com.Testing.practicasTesteo.exceptions.AuthenticationException;
 import com.Testing.practicasTesteo.exceptions.CustomerNotFoundException;
+import com.Testing.practicasTesteo.exceptions.NotDeletedException;
+import com.Testing.practicasTesteo.exceptions.NotSavedException;
 import com.Testing.practicasTesteo.respository.ArticleRepository;
 import com.Testing.practicasTesteo.respository.CreditRepository;
 import com.Testing.practicasTesteo.respository.CustomerRepository;
 import com.Testing.practicasTesteo.respository.WalletRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,42 +52,61 @@ public class CustomerServicesImpl implements CustomerService {
     }
 
     @Override
-    public Customer getCustomerById(long id) throws CustomerNotFoundException {
-        return customerRepository.findById(id)
-                .orElseThrow(() -> new CustomerNotFoundException("Customer not found with id: " + id));
+    public Customer getCustomerById(long customerId) throws CustomerNotFoundException {
+
+        try {
+            return customerRepository.findById(customerId)
+                    .orElseThrow(() -> new CustomerNotFoundException("Customer not found with id: " + customerId));
+        } catch (Exception e) {
+            throw new RuntimeException("Internal server error: " + e.getMessage(), e);
+
+        }
     }
 
+    //TODO REVISAR ESTO
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Customer saveCustomer(Customer customer) {
-        // Guardar el cliente
-        Customer savedCustomer = customerRepository.save(customer);
+        try {
+            // Guardar el cliente
+            Customer savedCustomer = customerRepository.save(customer);
 
-        // Crear y asociar el wallet
-        Wallet wallet = Wallet.builder()
-                .name(savedCustomer.getName() + "'s Wallet")
-                .customer(savedCustomer)
-                .build();
+            // Crear la billetera
+            Wallet wallet = Wallet.builder()
+                    .name(savedCustomer.getName() + "'s Wallet")
+                    .customer(savedCustomer)
+                    .build();
 
-        List<Article> existingArticles = articleRepository.findAll();
-        wallet.setArticles(existingArticles);
-        walletRepository.save(wallet);
-        savedCustomer.setWallet(wallet);
+            // Asignar artículos existentes
+            List<Article> existingArticles = articleRepository.findAll();
+            wallet.setArticles(existingArticles);
 
-        // Crear y asociar el crédito
-        Credit credit = Credit.builder()
-                .customer(savedCustomer)
-                .euro(0.0)
-                .bitcoin(0.0)
-                .ethereum(0.0)
-                .ripple(0.0)
-                .litecoin(0.0)
-                .cardano(0.0)
-                .build();
-        creditRepository.save(credit);
+            walletRepository.save(wallet);
+            savedCustomer.setWallet(wallet);
 
-        // Guardar la entidad Customer actualizada con relaciones establecidas
-        return customerRepository.save(savedCustomer);
+            // Crear crédito asociado
+            Credit credit = Credit.builder()
+                    .customer(savedCustomer)
+                    .euro(0.0)
+                    .bitcoin(0.0)
+                    .ethereum(0.0)
+                    .ripple(0.0)
+                    .litecoin(0.0)
+                    .cardano(0.0)
+                    .build();
+
+            creditRepository.save(credit);
+
+            // Guardar cliente con billetera asociada
+            return customerRepository.save(savedCustomer);
+
+        } catch (NotSavedException e) {
+
+            throw new NotSavedException("Failed to save customer data: ");
+        } catch (Exception e) {
+
+            throw new RuntimeException("Unexpected error while saving customer: ");
+        }
     }
 
     @Override
@@ -112,21 +133,32 @@ public class CustomerServicesImpl implements CustomerService {
     @Override
     public boolean deleteAllCustomers() {
         try {
+
+            long count = customerRepository.count();
+            if (count == 0) {
+                return false;
+            }
             customerRepository.deleteAll();
             return true;
-
         } catch (Exception e) {
-            throw new CustomerNotFoundException("Customers no encontrados.");
+            throw new NotDeletedException("An error occurred while deleting customers: " + e.getMessage(), e);
         }
+
     }
+
 
     @Override
     public boolean deleteCustomerById(long id) {
         try {
             Optional<Customer> customerFind = customerRepository.findById(id);
-            return true;
+            if (customerFind.isPresent()) {
+                customerRepository.deleteById(id);
+                return true;
+            } else {
+                throw new CustomerNotFoundException("Customer not found.");
+            }
         } catch (Exception e) {
-            throw new CustomerNotFoundException("Customer ID " + id + " no encontrado.");
+            throw new NotDeletedException("An error occurred while deleting the customer.");
         }
 
     }
@@ -134,9 +166,9 @@ public class CustomerServicesImpl implements CustomerService {
     @Override
     public Customer authenticate(String email, String password) {
         try {
-            Optional<Customer> usuario = customerRepository.findByEmailAndPassword(email, password);
-            if (usuario.isPresent()) {
-                return usuario.get();
+            Optional<Customer> user = customerRepository.findByEmailAndPassword(email, password);
+            if (user.isPresent()) {
+                return user.get();
             } else {
                 throw new AuthenticationException("Wrong credentials.");
             }

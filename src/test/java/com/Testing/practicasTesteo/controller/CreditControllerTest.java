@@ -74,7 +74,7 @@ class CreditControllerTest {
 
         mockMvc.perform(get("/credit/getAllCreditsByCustomerId/1"))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("Credit not found for customer with ID: 1"));
+                .andExpect(content().string("Credit not found for customer with ID: " + 1L));
     }
 
 

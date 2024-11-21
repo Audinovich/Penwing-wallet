@@ -20,63 +20,62 @@ public class CustomerController {
     CustomerService customerService;
 
     @GetMapping("/getAllCustomers")
-    public ResponseEntity<List<Customer>> getAllCustomers() {
+    public ResponseEntity<?> getAllCustomers()throws CustomerNotFoundException {
         try {
             List<Customer> customers = customerService.getAllCustomers();
             return new ResponseEntity<>(customers, HttpStatus.OK);
         } catch (CustomerNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }
 
     @GetMapping("/getCustomerById/{customerId}")
-    public ResponseEntity<Customer> getCustomerById(@PathVariable("customerId") long customerId) {
+    public ResponseEntity<?> getCustomerById(@PathVariable("customerId") long customerId) {
 
         try {
             Customer customerFoundById = customerService.getCustomerById(customerId);
             return new ResponseEntity<>(customerFoundById, HttpStatus.OK);
         } catch (CustomerNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
 
         }
 
     }
 
     @PostMapping("/saveCustomer")
-    public ResponseEntity<Customer> saveCustomer(@RequestBody Customer customer) {
+    public ResponseEntity<?> saveCustomer(@RequestBody Customer customer) {
         try {
             Customer savedCustomer = customerService.saveCustomer(customer);
             return new ResponseEntity<>(savedCustomer, HttpStatus.CREATED);
 
         } catch (NotSavedException e) {
-
-            return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_IMPLEMENTED);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PutMapping("/updateCustomer/{customerId}")
-    public ResponseEntity<Customer> updateCustomer(@RequestBody Customer customer, @PathVariable("customerId") long id) {
+    public ResponseEntity<?> updateCustomer(@RequestBody Customer customer, @PathVariable("customerId") long id) {
         try {
             Customer updatedCustomer = customerService.updateCustomerById(customer, id);
             return new ResponseEntity<>(updatedCustomer, HttpStatus.OK);
 
         } catch (CustomerNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
 
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @DeleteMapping("/deleteAllCustomers")
-    public ResponseEntity<String> deleteAllCustomers() {
+    public ResponseEntity<?> deleteAllCustomers() {
         try {
             boolean customerFound = customerService.deleteAllCustomers();
             if (customerFound) {
@@ -85,20 +84,19 @@ public class CustomerController {
                 return new ResponseEntity<>("Customer not found.", HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @DeleteMapping("/deleteCustomerById/{id}")
-    public ResponseEntity<String> deleteCustomerById(@PathVariable("id") long id) {
+    public ResponseEntity<?> deleteCustomerById(@PathVariable("id") long id) {
         try {
-            if (customerService.deleteCustomerById(id)) {
-                return new ResponseEntity<>("Customer has been deleted.", HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>("Customer not found.", HttpStatus.NOT_FOUND);
-            }
+            customerService.deleteCustomerById(id); // No necesitas verificar el booleano.
+            return new ResponseEntity<>("Customer has been deleted.", HttpStatus.OK);
+        } catch (CustomerNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
