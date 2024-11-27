@@ -47,12 +47,12 @@ class CustomerControllerTest {
                 .phone("+34657890890")
                 .build();
 
-        customers = Arrays.asList(customer);
+        customers = List.of(customer);
     }
 
     @Test
     @DisplayName("GET /customer/getAllCustomers - Should return 200-OK")
-    void getAllCustomersShouldReturnO() throws Exception {
+    void getAllCustomersShouldReturnOk() throws Exception {
         when(customerService.getAllCustomers()).thenReturn(customers);
 
         mockMvc.perform(get("/customer/getAllCustomers"))
@@ -139,7 +139,6 @@ class CustomerControllerTest {
                     "email": "juanperez@gmail.com",
                     "address": "calle1",
                     "phone":"+34657890890"
-                             
                 }
                 """;
 
@@ -278,7 +277,6 @@ class CustomerControllerTest {
                     "email": "juanperez@gmail.com",
                     "address": "calle1",
                     "phone":"+34657890890"
-                             
                 }
                 """;
 
@@ -358,7 +356,6 @@ class CustomerControllerTest {
                 .andExpect(status().isInternalServerError())
                 .andExpect(content().string("An error occurred while deleting the customer: "));
     }
-
 
 
 }

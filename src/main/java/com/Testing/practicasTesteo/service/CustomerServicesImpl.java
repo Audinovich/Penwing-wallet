@@ -54,13 +54,13 @@ public class CustomerServicesImpl implements CustomerService {
     @Override
     public Customer getCustomerById(long customerId) throws CustomerNotFoundException {
 
-        try {
-            return customerRepository.findById(customerId)
+//        try {
+        return customerRepository.findById(customerId)
                     .orElseThrow(() -> new CustomerNotFoundException("Customer not found with id: " + customerId));
-        } catch (Exception e) {
-            throw new RuntimeException("Internal server error: " + e.getMessage(), e);
-
-        }
+//        } catch (Exception e) {
+//            throw new RuntimeException("Internal server error: " + e.getMessage(), e);
+//
+//        }
     }
 
     //TODO REVISAR ESTO

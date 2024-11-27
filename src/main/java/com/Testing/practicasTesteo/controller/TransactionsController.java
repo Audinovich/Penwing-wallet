@@ -3,7 +3,6 @@ package com.Testing.practicasTesteo.controller;
 
 import com.Testing.practicasTesteo.dto.ResponseDTO;
 import com.Testing.practicasTesteo.dto.TransactionsDTO;
-import com.Testing.practicasTesteo.entity.Article;
 import com.Testing.practicasTesteo.entity.Transactions;
 import com.Testing.practicasTesteo.exceptions.ArticleNotFoundException;
 import com.Testing.practicasTesteo.exceptions.NotSavedException;
@@ -25,44 +24,58 @@ public class TransactionsController {
     private TransactionService transactionService;
     //TODO por cliente
     @GetMapping("/getAllTransactions")
-    public ResponseEntity<List<Transactions>> getAllTransactions() {
+    public ResponseEntity<?> getAllTransactions() {
         try {
             List<Transactions> transactionListFound = transactionService.getAllTransactions();
             return new ResponseEntity<>(transactionListFound, HttpStatus.OK);
         } catch (TransactionNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @GetMapping("/getAllTransactionsByTransactionDate/{transactionDate}")
 
-    public ResponseEntity<List<Transactions>> getArticleById(@PathVariable("transactionDate") LocalDateTime transactionDate) {
+    public ResponseEntity<?> getArticleById(@PathVariable("transactionDate") LocalDateTime transactionDate) {
         try {
             List<Transactions> transactionsFound = transactionService.getTransactionsByDate(transactionDate);
             return new ResponseEntity<>(transactionsFound, HttpStatus.OK);
         } catch (ArticleNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PostMapping("/saveTransaction")
-    public ResponseEntity<ResponseDTO> saveTransaction(@RequestBody TransactionsDTO transactionsDTO) {
+    public ResponseEntity<?> saveTransaction(@RequestBody TransactionsDTO transactionsDTO) {
         try {
-            // Llama al servicio para guardar la transacción
+
             ResponseDTO savedTransaction = transactionService.saveTransaction(transactionsDTO);
 
-            // Devuelve la transacción guardada con el ID y otros detalles actualizados
             return new ResponseEntity<>(savedTransaction, HttpStatus.CREATED);
         } catch (NotSavedException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("/getAllTransactionsByCustomerId/{customerId}")
+    public ResponseEntity<?>getAllTransactionsByCustomerId(@PathVariable("customerId") Long customerId){
+        try{
+            List <Transactions> transactionsList= transactionService.getAllTransactionsByCustomerId(customerId);
+            return new ResponseEntity<>(transactionsList,HttpStatus.OK);
+
+        }catch (TransactionNotFoundException e){
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
+        }catch (Exception e){
+            return  new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
 
 
 }

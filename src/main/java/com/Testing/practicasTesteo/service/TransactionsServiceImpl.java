@@ -62,8 +62,19 @@ public class TransactionsServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<Transactions> getAllTransactionsByCustomerId(Long customerId) {
-        return List.of();
+    public List<Transactions> getAllTransactionsByCustomerId(Long customerId) throws TransactionNotFoundException {
+        try {
+            List<Transactions> transactionsList = transactionsRepository.findTransactionsByCustomerId(customerId);
+            if (transactionsList.isEmpty()) {
+                throw new TransactionNotFoundException("Not transaction found whit Customer Id" + customerId);
+            } else {
+                return transactionsList;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Unexpected error: " + e.getMessage(), e);
+
+        }
+
     }
 
 
@@ -79,8 +90,8 @@ public class TransactionsServiceImpl implements TransactionService {
 
             // Generar la descripción
             String description = transactionDTO.getOperation().equals("buy")
-                    ? "Compra de " + transactionDTO.getCreditType() + " por " + transactionDTO.getAmount() + " euros."
-                    : "Venta de " + transactionDTO.getCreditType() + " por " + transactionDTO.getAmount() + " euros.";
+                    ? "Compra de " + transactionDTO.getAmount() + " " + transactionDTO.getCreditType()
+                    : "Venta de " + transactionDTO.getAmount() + transactionDTO.getCreditType();
 
             // Crear la transacción
             Transactions transaction = Transactions.builder()

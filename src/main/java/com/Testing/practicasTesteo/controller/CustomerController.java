@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/customer")
@@ -38,8 +39,8 @@ public class CustomerController {
         try {
             Customer customerFoundById = customerService.getCustomerById(customerId);
             return new ResponseEntity<>(customerFoundById, HttpStatus.OK);
-        } catch (CustomerNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
+        } catch (CustomerNotFoundException ee) {
+            return new ResponseEntity<>(ee.getMessage(),HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
 
@@ -52,10 +53,10 @@ public class CustomerController {
         try {
             Customer savedCustomer = customerService.saveCustomer(customer);
             return new ResponseEntity<>(savedCustomer, HttpStatus.CREATED);
-
         } catch (NotSavedException e) {
             return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_IMPLEMENTED);
         } catch (Exception e) {
+
             return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -65,10 +66,8 @@ public class CustomerController {
         try {
             Customer updatedCustomer = customerService.updateCustomerById(customer, id);
             return new ResponseEntity<>(updatedCustomer, HttpStatus.OK);
-
         } catch (CustomerNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
-
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
         }

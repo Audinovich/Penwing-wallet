@@ -192,10 +192,10 @@ public class ArticleServiceImpl implements ArticleService {
         return existingArticles;
     }
 
-
+    //TODO ver el tema de la APIKEY
     private List<Article> fetchCryptoDataFromAPI() throws IOException {
-        String apiUrl = "https://api.ejemplo.com/cryptodata"; // Cambia esto a la URL correcta
-        String apiKey = "API_KEY"; // Reemplaza esto con tu clave API
+        String apiUrl = "https://api.ejemplo.com/cryptodata";
+        String apiKey = "API_KEY";
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(apiUrl))
