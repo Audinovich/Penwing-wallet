@@ -27,8 +27,12 @@ import java.util.Optional;
 @Service
 public class ArticleServiceImpl implements ArticleService {
 
-    @Autowired
-    private ArticleRepository articleRepository;
+    //conexion con el repositorio a traves de constructor
+    private final ArticleRepository articleRepository;
+
+    public ArticleServiceImpl(ArticleRepository articleRepository) {
+        this.articleRepository = articleRepository;
+    }
 
     @Value("${mockdata}")
     Boolean mockData;
@@ -60,20 +64,15 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public Article getArticleById(long id) {
-        try {
-            return articleRepository.findById(id)
-                    .orElseThrow(() -> new ArticleNotFoundException("Article not found with id: " + id));
-        } catch (ArticleNotFoundException e) {
-            throw new ArticleNotFoundException("Article not found with id: " + id);
-        } catch (Exception e) {
-            throw new RuntimeException("Internal server error: " + e.getMessage(), e);
-        }
+    public Article getArticleById(long id) throws ArticleNotFoundException {
+        return articleRepository.findById(id)
+                .orElseThrow(() -> new ArticleNotFoundException("Article not found with id: " + id));
     }
 
+    //PROPAGA LA EXCEPCION QUE RECIBE DE GETARTICLEBYID Y LA MANDA AL CONTROLADOR, SI NO TUVIERA EL THROWS DEBERIA USAR TRY CATCH
     @Override
     public Article updateArticleById(Article article, long id) throws ArticleNotFoundException {
-        Article articleToUpdate = getArticleById(id); // Usar el método getArticleById
+        Article articleToUpdate = getArticleById(id);
         updateArticleFields(articleToUpdate, article);
         return articleRepository.save(articleToUpdate);
     }
@@ -103,39 +102,50 @@ public class ArticleServiceImpl implements ArticleService {
     public Article saveArticle(Article article) throws NotSavedException {
         try {
             return articleRepository.save(article);
+        } catch (RuntimeException e) {
+            throw new NotSavedException("Failed to save article due to a persistence issue: " + e.getMessage(), e);
         } catch (Exception e) {
-            throw new NotSavedException("Error saving article: " + e.getMessage(), e);
+            throw new NotSavedException("An unexpected error occurred: " + e.getMessage(), e);
         }
     }
 
     public List<Article> saveArticles(List<Article> articles) throws NotSavedException {
-        List<Article> savedArticles = new ArrayList<>();
-        for (Article article : articles) {
-            try {
-                savedArticles.add(saveArticle(article));
-            } catch (NotSavedException e) {
-                System.err.println("Failed to save article: " + article.getName() + " - " + e.getMessage());
-            }
+        try {
+            return articleRepository.saveAll(articles);
+        } catch (RuntimeException e) {
+            throw new NotSavedException("Failed to save articles due to a persistence issue: " + e.getMessage(), e);
+        } catch (Exception e) {
+            throw new NotSavedException("An unexpected error occurred: " + e.getMessage(), e);
         }
-        return savedArticles;
     }
 
     @Override
-    public boolean deleteAllArticles() {
+    public boolean deleteAllArticles() throws NotDeletedException {
         try {
             articleRepository.deleteAll();
             return true;
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             throw new NotDeletedException("Articles not deleted: " + e.getMessage(), e);
+        }catch (Exception e){
+            throw new NotDeletedException("An unexpected error occurred: "  + e.getMessage(), e);
         }
     }
 
     @Override
-    public boolean deleteArticleById(long id) throws ArticleNotFoundException {
-        Article articleToDelete = getArticleById(id);
-        articleRepository.delete(articleToDelete);
-        return true;
+    public boolean deleteArticleById(long articleId) throws ArticleNotFoundException, NotDeletedException {
+
+        try {
+            articleRepository.deleteById(articleId);
+            return true;
+        } catch (RuntimeException e) {
+            throw new NotDeletedException("Article Not deleted: " + e.getMessage(), e);
+        } catch (Exception e) {
+            throw new NotDeletedException("An unexpected error occurred: "  + e.getMessage(), e);
+        }
     }
+
+
+
     // ternario para ver si consumo MOCK o API
     @Override
     public List<Article> fetchCryptoData() throws IOException {
@@ -155,7 +165,6 @@ public class ArticleServiceImpl implements ArticleService {
             throw new ArticleFetchException("Error accessing article data: " + e.getMessage(), e);
         }
     }
-
 
 
     @Override
@@ -210,7 +219,8 @@ public class ArticleServiceImpl implements ArticleService {
         }
         if (response.statusCode() == 200) {
             ObjectMapper objectMapper = new ObjectMapper();
-            return objectMapper.readValue(response.body(), new TypeReference<List<Article>>() {});
+            return objectMapper.readValue(response.body(), new TypeReference<List<Article>>() {
+            });
         } else {
             throw new IOException("Error fetching data from API: " + response.statusCode());
         }

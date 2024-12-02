@@ -1,6 +1,9 @@
 package com.Testing.practicasTesteo.service;
 
 import com.Testing.practicasTesteo.entity.Article;
+import com.Testing.practicasTesteo.exceptions.ArticleNotFoundException;
+import com.Testing.practicasTesteo.exceptions.NotDeletedException;
+import com.Testing.practicasTesteo.exceptions.NotSavedException;
 import com.Testing.practicasTesteo.respository.ArticleRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,14 +13,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
-//@ExtendWith(MockitoExtension.class)
+
 @SpringBootTest
 class ArticleServiceImplTest {
 
@@ -29,7 +31,7 @@ class ArticleServiceImplTest {
     private ArticleService articleService;
 
     private Article mockArticle;
-
+    private Article mockArticle2;
 
     @BeforeEach
     void setUp() {
@@ -41,6 +43,15 @@ class ArticleServiceImplTest {
                 .marketCap(BigInteger.valueOf(1000000000))
 
                 .build();
+       mockArticle2 = Article.builder()
+                .articleId(2L)
+                .name("Ethereum")
+                .symbol("ETH")
+                .currentPrice(4000.0)
+                .marketCap(BigInteger.valueOf(500000000))
+                .build();
+
+
     }
 
     @Test
@@ -65,7 +76,40 @@ class ArticleServiceImplTest {
     }
 
     @Test
-    void getArticleById() {
+    void getArticleById_ShouldReturnArticle() throws ArticleNotFoundException {
+        when(articleRepository.findById(1L)).thenReturn(Optional.of(mockArticle));
+
+        Article result = articleService.getArticleById(1L);
+
+        assertNotNull(result);
+        assertEquals("Bitcoin", result.getName());
+
+        verify(articleRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    void getArticleById_ShouldThrowArticleNotFoundException_WhenArticleNotFound() {
+
+        when(articleRepository.findById(1L)).thenReturn(Optional.empty());
+
+        ArticleNotFoundException articleException = assertThrows(ArticleNotFoundException.class, () -> {
+            articleService.getArticleById(1L);
+        });
+
+        assertEquals("Article not found with id: 1", articleException.getMessage());
+        verify(articleRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    void getArticleById_ShouldThrowInternalServerError() {
+
+        when(articleRepository.findById(1L)).thenThrow(new RuntimeException("Internal server error"));
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            articleService.getArticleById(1L);
+        });
+        assertEquals("Internal server error", exception.getMessage());
+        verify(articleRepository, times(1)).findById(1L);
     }
 
     @Test
@@ -73,12 +117,128 @@ class ArticleServiceImplTest {
     }
 
     @Test
-    void saveArticle() {
+    void saveArticleShouldReturnSavedArticle() {
+        when(articleRepository.save(mockArticle)).thenReturn(mockArticle);
+
+        Article savedArticle = articleService.saveArticle(mockArticle);
+
+        assertNotNull(savedArticle,"El artículo guardado no debe ser nulo");
+        assertEquals(mockArticle.getArticleId(), savedArticle.getArticleId(), "Los IDs del artículo no coinciden");
+        assertEquals(mockArticle.getName(), savedArticle.getName(), "Los nombres del artículo no coinciden");
+        assertEquals(mockArticle.getSymbol(), savedArticle.getSymbol(), "Los símbolos del artículo no coinciden");
+        assertEquals(mockArticle.getCurrentPrice(), savedArticle.getCurrentPrice(), "Los precios del artículo no coinciden");
+        assertEquals(mockArticle.getMarketCap(), savedArticle.getMarketCap(), "Las capitalizaciones de mercado del artículo no coinciden");
+
+        // 5. Verificamos que el repositorio fue llamado exactamente una vez para guardar el artículo
+        verify(articleRepository, times(1)).save(mockArticle);
     }
 
     @Test
-    void saveArticles() {
+    void saveArticleShouldReturnNotSavedExceptionByRuntimeException() {
+        when(articleRepository.save(mockArticle)).thenThrow(new RuntimeException("Internal Server Error"));
+
+        NotSavedException notSavedException = assertThrows(NotSavedException.class, ()-> {
+            articleService.saveArticle(mockArticle);
+        });
+        assertEquals("Failed to save article due to a persistence issue: Internal Server Error",notSavedException.getMessage());
+        verify(articleRepository, times(1)).save(mockArticle);
     }
+
+
+    @Test
+    void saveArticleShouldThrowNotSavedException_ForCheckedException() {
+
+        when(articleRepository.save(mockArticle)).thenAnswer(invocation -> {
+            throw new Exception("Checked exception triggered");
+        });
+        NotSavedException notSavedException = assertThrows(NotSavedException.class, () -> {
+            articleService.saveArticle(mockArticle);
+        });
+        assertEquals("An unexpected error occurred: Checked exception triggered", notSavedException.getMessage());
+        verify(articleRepository, times(1)).save(mockArticle);
+    }
+
+    @Test
+    void saveArticlesShouldReturn_SavedArticles() {
+
+        List<Article> articlesToSave = List.of(mockArticle, mockArticle2);
+        when(articleRepository.save(mockArticle)).thenReturn(mockArticle);
+        when(articleRepository.save(mockArticle2)).thenReturn(mockArticle2);
+
+        List<Article> savedArticles = articleService.saveArticles(articlesToSave);
+
+        assertNotNull(savedArticles, "La lista de artículos guardados no debe ser nula");
+        assertEquals(2, savedArticles.size(), "La lista debe contener exactamente 2 artículos");
+        assertEquals("Bitcoin", savedArticles.get(0).getName(), "El primer artículo debe ser 'Bitcoin'");
+       assertEquals("Ethereum", savedArticles.get(1).getName(), "El segundo artículo debe ser 'Ethereum'");
+
+
+        verify(articleRepository, times(1)).save(mockArticle);
+        verify(articleRepository, times(1)).save(mockArticle2);
+
+    }
+    @Test
+    void saveArticlesShouldThrow_NotSaved() {
+        List<Article> mockArticleList = List.of(mockArticle,mockArticle2);
+
+        when(articleRepository.saveAll(mockArticleList))
+                .thenThrow(new RuntimeException("Internal Server Error"));
+
+        NotSavedException notSavedException = assertThrows(NotSavedException.class,()-> {
+            articleService.saveArticles(mockArticleList);
+        });
+        assertEquals("Failed to save articles due to a persistence issue: Internal Server Error",notSavedException.getMessage());
+        verify(articleRepository,times(1)).saveAll(mockArticleList);
+    }
+
+
+    //todo Revisar este test- then throw solo funciona para excepciones no comprobadas unchecked
+    //todo conviene declarar en la firma del metodo en el servicio para usar thenthrow? NO
+    @Test
+    void saveArticlesShouldThrow_NotSavedException_WhenGenericExceptionOccurs() {
+        // Arrange
+        List<Article> mockArticleList = List.of(mockArticle, mockArticle2);
+
+        when(articleRepository.saveAll(mockArticleList)).thenAnswer(invocation -> {
+                    throw new Exception("Unexpected error");
+
+                });
+        NotSavedException exception = assertThrows(NotSavedException.class,
+                () -> articleService.saveArticles(mockArticleList)
+        );
+
+        assertEquals("An unexpected error occurred: Unexpected error", exception.getMessage());
+        verify(articleRepository, times(1)).saveAll(mockArticleList);
+    }
+
+
+    //TODO REVISAR ESTE TEST
+    @Test
+    void deleteArticleByIdShouldDeleteArticleSuccessfully() throws ArticleNotFoundException, NotDeletedException {
+
+        articleService.deleteArticleById(mockArticle.getArticleId());
+
+        verify(articleRepository, times(1)).deleteById(mockArticle.getArticleId());
+    }
+
+        //doThrow  Se utiliza para simular una excepción en un método void (sin valor de retorno)
+        @Test
+        void deleteArticleByIdShouldThrowNotDeletedException_WhenRuntimeExceptionOccurs() {
+
+            doThrow(new RuntimeException("Error"))
+                    .when(articleRepository).deleteById(1L);
+
+
+            NotDeletedException exception = assertThrows(NotDeletedException.class, () -> {
+                articleService.deleteArticleById(1L);
+            });
+
+
+            assertEquals("Articles Not deleted: Error", exception.getMessage());
+
+
+            verify(articleRepository, times(1)).deleteById(1L);
+        }
 
     @Test
     void deleteAllArticles() {

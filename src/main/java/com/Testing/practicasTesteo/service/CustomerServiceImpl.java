@@ -12,8 +12,6 @@ import com.Testing.practicasTesteo.respository.ArticleRepository;
 import com.Testing.practicasTesteo.respository.CreditRepository;
 import com.Testing.practicasTesteo.respository.CustomerRepository;
 import com.Testing.practicasTesteo.respository.WalletRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,20 +20,23 @@ import java.util.Optional;
 
 
 @Service
-public class CustomerServicesImpl implements CustomerService {
+public class CustomerServiceImpl implements CustomerService {
 
-    @Autowired
-    private CustomerRepository customerRepository;
 
-    @Autowired
-    private WalletRepository walletRepository;
+    private final CustomerRepository customerRepository;
+    private final WalletRepository walletRepository;
+    private final ArticleRepository articleRepository;
+    private final CreditRepository creditRepository;
 
-    @Autowired
-    private ArticleRepository articleRepository;
-
-    @Autowired
-    private CreditRepository creditRepository;
-
+    public CustomerServiceImpl(CustomerRepository customerRepository,
+                               WalletRepository walletRepository,
+                               ArticleRepository articleRepository,
+                               CreditRepository creditRepository){
+        this.customerRepository= customerRepository;
+        this.walletRepository=walletRepository;
+        this.articleRepository=articleRepository;
+        this.creditRepository=creditRepository;
+    }
 
     @Override
     public List<Customer> getAllCustomers() {

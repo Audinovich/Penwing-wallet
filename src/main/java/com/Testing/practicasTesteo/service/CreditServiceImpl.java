@@ -21,8 +21,12 @@ import java.util.Map;
 @Service
 public class CreditServiceImpl implements CreditService {
 
-    @Autowired
-    CreditRepository creditRepository;
+
+   private final CreditRepository creditRepository;
+
+   public CreditServiceImpl(CreditRepository creditRepository){
+       this.creditRepository= creditRepository;
+   }
 
     @Autowired
     ArticleService articleService;
