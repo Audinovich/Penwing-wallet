@@ -1,17 +1,23 @@
 package com.Testing.practicasTesteo.service;
 
 import com.Testing.practicasTesteo.entity.Article;
+import com.Testing.practicasTesteo.exceptions.ArticleFetchException;
 import com.Testing.practicasTesteo.exceptions.ArticleNotFoundException;
 import com.Testing.practicasTesteo.exceptions.NotDeletedException;
 import com.Testing.practicasTesteo.exceptions.NotSavedException;
 import com.Testing.practicasTesteo.respository.ArticleRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.dao.DataAccessException;
 
+import java.io.IOException;
 import java.math.BigInteger;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +28,7 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 @SpringBootTest
 class ArticleServiceImplTest {
+
 
 
     @MockBean
@@ -96,7 +103,7 @@ class ArticleServiceImplTest {
             articleService.getArticleById(1L);
         });
 
-        assertEquals("Article not found with id: 1", articleException.getMessage());
+        assertEquals("Article not found with id: " + 1L, articleException.getMessage());
         verify(articleRepository, times(1)).findById(1L);
     }
 
@@ -300,21 +307,110 @@ class ArticleServiceImplTest {
 
     }
 
-
-
     @Test
-    void deleteArticleById() {
+    void getArticlesByCustomerIdShouldGetArticlesSuccessfully() throws ArticleFetchException {
+
+        List<Article> articlesList = List.of(mockArticle,mockArticle2);
+        when(articleRepository.getAllArticlesByCustomerId(1L)).thenReturn(articlesList);
+
+        List<Article> result = articleService.getArticlesByCustomerId(1L);
+
+        assertNotNull(articlesList);
+        assertEquals("Bitcoin",articlesList.get(0).getName());
+        assertEquals("Ethereum",articlesList.get(1).getName());
+
+        verify(articleRepository,times(1)).getAllArticlesByCustomerId(1L);
+
+    }
+    @Test
+    void getArticlesByCustomerIdShouldThrowArticleNotFoundExceptionWhenNoArticlesFound() {
+
+        when(articleRepository.getAllArticlesByCustomerId(1L)).thenReturn(Collections.emptyList());
+
+        ArticleNotFoundException exception = assertThrows(ArticleNotFoundException.class, () -> {
+            articleService.getArticlesByCustomerId(1L);
+        });
+
+        assertEquals("No data found for customer ID: " + 1L ,exception.getMessage());
+        verify(articleRepository, times(1)).getAllArticlesByCustomerId(1L);
     }
 
     @Test
-    void fetchCryptoData() {
+    void getArticlesByCustomerIdShouldThrowArticleFetchException_WhenDataAccessExceptionOccurs(){
+
+        doAnswer(invocationOnMock ->{throw  new Exception("Internal Error");})
+                .when(articleRepository).getAllArticlesByCustomerId(1L);
+
+        ArticleFetchException exception = assertThrows(ArticleFetchException.class,()->{
+            articleService.getArticlesByCustomerId(1L);
+        });
+        assertEquals("Error accessing article data: Internal Error",exception.getMessage());
+        verify(articleRepository,times(1)).getAllArticlesByCustomerId(1L);
+    }
+
+
+    //TODO REVISAR CON ANDRES
+    @Test
+    void fetchCryptoData_mockDataTrue_returnsMockCryptos() throws IOException {
+
+        ArticleServiceImpl articleService = new ArticleServiceImpl(null);
+        articleService.mockData = true;
+
+
+        List<Article> mockCryptos = List.of(mockArticle,mockArticle2);
+        ArticleServiceImpl spyService = Mockito.spy(articleService);
+        doReturn(mockCryptos).when(spyService).getMockCryptos();
+
+
+        List<Article> result = spyService.fetchCryptoData();
+
+        // Verificar que se llama a getMockCryptos y no a fetchCryptoDataFromAPI
+        verify(spyService, times(1)).getMockCryptos();
+        verify(spyService, never()).fetchCryptoDataFromAPI();
+        assertEquals(mockCryptos, result);
     }
 
     @Test
-    void getArticlesByCustomerId() {
+    void fetchCryptoData_mockDataFalse_callsFetchCryptoDataFromAPI() throws IOException {
+        // Crear instancia real del servicio y simular métodos
+        ArticleServiceImpl articleService = new ArticleServiceImpl(null);
+        articleService.mockData = false;
+
+        // Simular el comportamiento de fetchCryptoDataFromAPI
+        List<Article> apiData = List.of(mockArticle,mockArticle2
+        );
+        ArticleServiceImpl spyService = Mockito.spy(articleService);
+        doReturn(apiData).when(spyService).fetchCryptoDataFromAPI();
+
+        // Ejecutar el método
+        List<Article> result = spyService.fetchCryptoData();
+
+        // Verificar que se llama a fetchCryptoDataFromAPI y no a getMockCryptos
+        verify(spyService, times(1)).fetchCryptoDataFromAPI();
+        verify(spyService, never()).getMockCryptos();
+        assertEquals(apiData, result);
     }
 
+    //TODO REVISAR EL TEST
     @Test
-    void getMockCryptos() {
+    void getMockCryptos_ShouldReturnArticles() throws IOException {
+
+
+        List<Article> existingArticles = List.of(mockArticle,mockArticle2);
+        when(articleRepository.findAll()).thenReturn(existingArticles);
+
+        // Llamar al método getMockCryptos
+        List<Article> result = articleService.getMockCryptos();
+
+        // Verificar que el resultado no sea nulo y que contenga el artículo esperado
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals("Bitcoin", result.get(0).getName());
+        assertEquals(48000.0, result.get(0).getCurrentPrice(), 0.0); // Comparación con margen de tolerancia
+
+        // Verificar que el método findAll() se llamó una vez
+        verify(articleRepository, times(1)).findAll();
     }
+
+
 }

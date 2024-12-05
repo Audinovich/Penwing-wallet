@@ -144,6 +144,20 @@ public class ArticleServiceImpl implements ArticleService {
         }
     }
 
+    @Override
+    public List<Article> getArticlesByCustomerId(Long customerId) throws ArticleNotFoundException, ArticleFetchException {
+        try {
+            List<Article> articlesFound = articleRepository.getAllArticlesByCustomerId(customerId);
+            if (articlesFound.isEmpty()) {
+                throw new ArticleNotFoundException("No data found for customer ID: " + customerId);
+            }
+            return articlesFound;
+        } catch (ArticleNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ArticleFetchException("Error accessing article data: " + e.getMessage(), e);
+        }
+    }
 
 
     // ternario para ver si consumo MOCK o API
@@ -153,20 +167,7 @@ public class ArticleServiceImpl implements ArticleService {
         return mockData ? getMockCryptos() : fetchCryptoDataFromAPI();
     }
 
-    @Override
-    public List<Article> getArticlesByCustomerId(Long customerId) throws ArticleNotFoundException, ArticleFetchException {
-        try {
-            List<Article> articlesFound = articleRepository.getAllArticlesByCustomerId(customerId);
-            if (articlesFound.isEmpty()) {
-                throw new ArticleNotFoundException("No data found for customer ID: " + customerId);
-            }
-            return articlesFound;
-        } catch (DataAccessException e) {
-            throw new ArticleFetchException("Error accessing article data: " + e.getMessage(), e);
-        }
-    }
-
-
+    //BUSCA LOS ARTICULOS EN LA BD POR SYMBOL Y SI NO ENCUENTRA LOS CREA, O ACTUALIZA
     @Override
     public List<Article> getMockCryptos() {
         List<Article> existingArticles = articleRepository.findAll();
@@ -200,9 +201,9 @@ public class ArticleServiceImpl implements ArticleService {
 
         return existingArticles;
     }
-
+    //SOLICITUD API EXTERNA HTTP , MANEJO EXCEPCIONES Y DESERIALIZA OBJECTMAPPER
     //TODO ver el tema de la APIKEY
-    private List<Article> fetchCryptoDataFromAPI() throws IOException {
+    List<Article> fetchCryptoDataFromAPI() throws IOException {
         String apiUrl = "https://api.ejemplo.com/cryptodata";
         String apiKey = "API_KEY";
         HttpClient client = HttpClient.newHttpClient();
