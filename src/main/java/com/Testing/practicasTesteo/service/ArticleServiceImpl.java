@@ -49,7 +49,7 @@ public class ArticleServiceImpl implements ArticleService {
             getMockCryptos();
         }
     }
-
+// TODO hacer test
     @Override
     public List<Article> getAllArticles() throws ArticleNotFoundException, ArticleFetchException {
         try {
@@ -58,7 +58,7 @@ public class ArticleServiceImpl implements ArticleService {
                 throw new ArticleNotFoundException("Articles not found");
             }
             return articleList;
-        } catch (DataAccessException e) {
+        } catch (ArticleNotFoundException e) {
             throw new ArticleFetchException("Error accessing article data: " + e.getMessage(), e);
         }
     }
@@ -127,7 +127,8 @@ public class ArticleServiceImpl implements ArticleService {
         } catch (RuntimeException e) {
             throw new NotDeletedException("Articles not deleted: " + e.getMessage(), e);
         }catch (Exception e){
-            throw new NotDeletedException("An unexpected error occurred: "  + e.getMessage(), e);
+          throw new NotDeletedException("An unexpected error occurred: "  + e.getMessage(), e);
+
         }
     }
 
@@ -193,9 +194,8 @@ public class ArticleServiceImpl implements ArticleService {
                 saveArticle(existingCryptoOpt.get());
             } else {
 
-                existingArticles.add(newCrypto);
+                existingArticles.add(saveArticle(newCrypto));
 
-                saveArticle(newCrypto);
             }
         }
 

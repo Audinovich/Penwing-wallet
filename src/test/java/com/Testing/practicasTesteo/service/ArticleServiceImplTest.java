@@ -8,15 +8,14 @@ import com.Testing.practicasTesteo.exceptions.NotSavedException;
 import com.Testing.practicasTesteo.respository.ArticleRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.dao.DataAccessException;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +27,6 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 @SpringBootTest
 class ArticleServiceImplTest {
-
 
 
     @MockBean
@@ -222,8 +220,6 @@ class ArticleServiceImplTest {
 
     //TODO REVISAR ESTE TEST - ES NECESARIO AGREGAR LOS THROWS EN LOS TEST?
     @Test
-
-
     void deleteArticleByIdShouldDeleteArticleSuccessfully() throws ArticleNotFoundException, NotDeletedException {
 
         articleService.deleteArticleById(mockArticle.getArticleId());
@@ -261,67 +257,70 @@ class ArticleServiceImplTest {
         NotDeletedException exception = assertThrows(NotDeletedException.class, () -> {
             articleService.deleteArticleById(1L);
         });
-        assertEquals("An unexpected error occurred: Error",exception.getMessage());
-        verify(articleRepository,times(1)).deleteById(1L);
+        assertEquals("An unexpected error occurred: Error", exception.getMessage());
+        verify(articleRepository, times(1)).deleteById(1L);
 
     }
 
     @Test
     void deleteAllArticlesShouldDeleteArticlesSuccessfully() {
 
-        List<Article> articlesList = List.of(mockArticle,mockArticle2);
+        List<Article> articlesList = List.of(mockArticle, mockArticle2);
         articleRepository.deleteAll(articlesList);
 
-        verify(articleRepository,times(1)).deleteAll(articlesList);
+        verify(articleRepository, times(1)).deleteAll(articlesList);
 
     }
+
     @Test
     void deleteAllArticlesShouldThrowNotDeletedException_WhenRuntimeExceptionOccurs() {
 
         doThrow(new RuntimeException("Error deleting Articles."))
                 .when(articleRepository).deleteAll();
 
-        NotDeletedException exception = assertThrows(NotDeletedException.class,()->{
+        NotDeletedException exception = assertThrows(NotDeletedException.class, () -> {
             articleService.deleteAllArticles();
 
         });
-        assertEquals("Articles not deleted: Error deleting Articles.",exception.getMessage());
+        assertEquals("Articles not deleted: Error deleting Articles.", exception.getMessage());
 
-        verify(articleRepository,times(1)).deleteAll();
+        verify(articleRepository, times(1)).deleteAll();
     }
 
     @Test
     void deleteAllArticlesShouldReturnNotDeletedException_WhenExceptionOccurs() {
 
         // TODO REVISAR ANOTACION INVOCATION O INVOCATION ON MOCK.
-        doAnswer(invocationOnMock ->{throw  new Exception("Internal Error");})
-                .when(articleRepository).deleteAll();
-        ;
-        NotDeletedException exception = assertThrows(NotDeletedException.class,()->{
+
+        doAnswer(invocation -> {
+          throw new Exception("Internal Error");}).when(articleRepository).deleteAll();
+
+        NotDeletedException exception = assertThrows(NotDeletedException.class, () -> {
             articleService.deleteAllArticles();
         });
 
-        assertEquals("An unexpected error occurred: Internal Error",exception.getMessage());
+        assertEquals("An unexpected error occurred: Internal Error", exception.getMessage());
 
-        verify(articleRepository,times(1)).deleteAll();
+        verify(articleRepository, times(1)).deleteAll();
 
     }
 
     @Test
     void getArticlesByCustomerIdShouldGetArticlesSuccessfully() throws ArticleFetchException {
 
-        List<Article> articlesList = List.of(mockArticle,mockArticle2);
+        List<Article> articlesList = List.of(mockArticle, mockArticle2);
         when(articleRepository.getAllArticlesByCustomerId(1L)).thenReturn(articlesList);
 
         List<Article> result = articleService.getArticlesByCustomerId(1L);
 
         assertNotNull(articlesList);
-        assertEquals("Bitcoin",articlesList.get(0).getName());
-        assertEquals("Ethereum",articlesList.get(1).getName());
+        assertEquals("Bitcoin", articlesList.get(0).getName());
+        assertEquals("Ethereum", articlesList.get(1).getName());
 
-        verify(articleRepository,times(1)).getAllArticlesByCustomerId(1L);
+        verify(articleRepository, times(1)).getAllArticlesByCustomerId(1L);
 
     }
+
     @Test
     void getArticlesByCustomerIdShouldThrowArticleNotFoundExceptionWhenNoArticlesFound() {
 
@@ -331,21 +330,23 @@ class ArticleServiceImplTest {
             articleService.getArticlesByCustomerId(1L);
         });
 
-        assertEquals("No data found for customer ID: " + 1L ,exception.getMessage());
+        assertEquals("No data found for customer ID: " + 1L, exception.getMessage());
         verify(articleRepository, times(1)).getAllArticlesByCustomerId(1L);
     }
 
     @Test
-    void getArticlesByCustomerIdShouldThrowArticleFetchException_WhenDataAccessExceptionOccurs(){
+    void getArticlesByCustomerIdShouldThrowArticleFetchException_WhenDataAccessExceptionOccurs() {
 
-        doAnswer(invocationOnMock ->{throw  new Exception("Internal Error");})
+        doAnswer(invocationOnMock -> {
+            throw new Exception("Internal Error");
+        })
                 .when(articleRepository).getAllArticlesByCustomerId(1L);
 
-        ArticleFetchException exception = assertThrows(ArticleFetchException.class,()->{
+        ArticleFetchException exception = assertThrows(ArticleFetchException.class, () -> {
             articleService.getArticlesByCustomerId(1L);
         });
-        assertEquals("Error accessing article data: Internal Error",exception.getMessage());
-        verify(articleRepository,times(1)).getAllArticlesByCustomerId(1L);
+        assertEquals("Error accessing article data: Internal Error", exception.getMessage());
+        verify(articleRepository, times(1)).getAllArticlesByCustomerId(1L);
     }
 
 
@@ -356,11 +357,9 @@ class ArticleServiceImplTest {
         ArticleServiceImpl articleService = new ArticleServiceImpl(null);
         articleService.mockData = true;
 
-
-        List<Article> mockCryptos = List.of(mockArticle,mockArticle2);
+        List<Article> mockCryptos = List.of(mockArticle, mockArticle2);
         ArticleServiceImpl spyService = Mockito.spy(articleService);
         doReturn(mockCryptos).when(spyService).getMockCryptos();
-
 
         List<Article> result = spyService.fetchCryptoData();
 
@@ -377,7 +376,7 @@ class ArticleServiceImplTest {
         articleService.mockData = false;
 
         // Simular el comportamiento de fetchCryptoDataFromAPI
-        List<Article> apiData = List.of(mockArticle,mockArticle2
+        List<Article> apiData = List.of(mockArticle, mockArticle2
         );
         ArticleServiceImpl spyService = Mockito.spy(articleService);
         doReturn(apiData).when(spyService).fetchCryptoDataFromAPI();
@@ -396,20 +395,34 @@ class ArticleServiceImplTest {
     void getMockCryptos_ShouldReturnArticles() throws IOException {
 
 
-        List<Article> existingArticles = List.of(mockArticle,mockArticle2);
+//        List<Article> existingArticles = List.of(mockArticle, mockArticle2);
+        List<Article> existingArticles = new ArrayList<Article>();
         when(articleRepository.findAll()).thenReturn(existingArticles);
+        when(articleRepository.save(any())).thenReturn(
+        new Article("bitcoin", "btc", "https://assets.coingecko.com/coins/images/1/large/bitcoin.png", 63562, new BigInteger("850000000000"), new BigInteger("50000000000"), 46000, 44000, -1000, -2.17, new BigInteger("10000000000"), -1.17, new BigInteger("18000000"), new BigInteger("21000000"), 69000, -34.83, "2021-11-10T00:00:00Z", "2024-10-12T20:36:50Z"),
+        new Article("ethereum", "eth", "https://assets.coingecko.com/coins/images/279/large/ethereum.png", 3000, new BigInteger("350000000000"), new BigInteger("20000000000"), 3200, 2900, -100, -3.23, new BigInteger("5000000000"), -1.42, new BigInteger("115000000"), new BigInteger("120000000"), 4800, -37.5, "2021-11-10T00:00:00Z", "2024-10-12T20:36:50Z"),
+        new Article("ripple", "xrp", "https://assets.coingecko.com/coins/images/44/large/ripple.png", 0.80, new BigInteger("40000000000"), new BigInteger("1500000000"), 0.85, 0.75, -0.02, -2.44, new BigInteger("500000000"), -1.25, new BigInteger("50000000000"), new BigInteger("100000000000"), 3.84, -79.17, "2018-01-07T00:00:00Z", "2024-10-12T20:36:50Z"),
+        new Article("litecoin", "ltc", "https://assets.coingecko.com/coins/images/2/large/litecoin.png", 150, new BigInteger("10000000000"), new BigInteger("500000000"), 160, 140, -5, -3.23, new BigInteger("300000000"), -2.92, new BigInteger("84000000"), new BigInteger("84000000"), 400, -62.5, "2021-05-10T00:00:00Z", "2024-10-12T20:36:50Z"),
+        new Article("cardano", "ada", "https://assets.coingecko.com/coins/images/975/large/cardano.png", 0.50, new BigInteger("16000000000"), new BigInteger("700000000"), 0.55, 0.48, -0.02, -3.85, new BigInteger("200000000"), -1.23, new BigInteger("32000000000"), new BigInteger("450000000"), 3.10, -83.87, "2021-09-02T00:00:00Z", "2024-10-12T20:36:50Z")
+        );
 
-        // Llamar al método getMockCryptos
+
+
+
+
         List<Article> result = articleService.getMockCryptos();
 
-        // Verificar que el resultado no sea nulo y que contenga el artículo esperado
         assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals("Bitcoin", result.get(0).getName());
-        assertEquals(48000.0, result.get(0).getCurrentPrice(), 0.0); // Comparación con margen de tolerancia
+        assertEquals(5, result.size());
+        assertEquals("bitcoin", result.get(0).getSymbol());
+        assertEquals("ethereum", result.get(1).getSymbol());
+        assertEquals("ripple", result.get(2).getSymbol());
+        assertEquals("litecoin", result.get(3).getSymbol());
+        assertEquals("cardano", result.get(4).getSymbol());
 
         // Verificar que el método findAll() se llamó una vez
         verify(articleRepository, times(1)).findAll();
+        verify(articleRepository, times(5)).save(any());
     }
 
 

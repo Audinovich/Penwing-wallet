@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 
@@ -47,29 +48,29 @@ public class CustomerServiceImpl implements CustomerService {
                 throw new CustomerNotFoundException("Customer not found");
             }
             return customerFound;
-        } catch (Exception e) {
-            throw new RuntimeException("Fail to get clients", e);
+        } catch (CustomerNotFoundException e) {
+            throw e;
         }
     }
 
     @Override
     public Customer getCustomerById(long customerId) throws CustomerNotFoundException {
 
-//        try {
+        try {
         return customerRepository.findById(customerId)
                     .orElseThrow(() -> new CustomerNotFoundException("Customer not found with id: " + customerId));
-//        } catch (Exception e) {
-//            throw new RuntimeException("Internal server error: " + e.getMessage(), e);
-//
-//        }
+        } catch (CustomerNotFoundException e) {
+           throw e;
+
+        }
     }
 
     //TODO REVISAR ESTO
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Customer saveCustomer(Customer customer) {
+    public Customer saveCustomer(Customer customer) throws NotSavedException {
         try {
-            // Guardar el cliente
+
             Customer savedCustomer = customerRepository.save(customer);
 
             // Crear la billetera
@@ -98,11 +99,10 @@ public class CustomerServiceImpl implements CustomerService {
 
             creditRepository.save(credit);
 
-            // Guardar cliente con billetera asociada
-            return customerRepository.save(savedCustomer);
+
+            return savedCustomer;
 
         } catch (NotSavedException e) {
-
             throw new NotSavedException("Failed to save customer data: ");
         } catch (Exception e) {
 
