@@ -6,7 +6,6 @@ import com.Testing.practicasTesteo.dto.ResponseDTO;
 import com.Testing.practicasTesteo.dto.TransactionsDTO;
 import com.Testing.practicasTesteo.entity.Customer;
 import com.Testing.practicasTesteo.entity.Transactions;
-import com.Testing.practicasTesteo.exceptions.ArticleFetchException;
 import com.Testing.practicasTesteo.exceptions.NotFoundException;
 import com.Testing.practicasTesteo.exceptions.NotSavedException;
 import com.Testing.practicasTesteo.exceptions.TransactionNotFoundException;
@@ -25,7 +24,7 @@ public class TransactionsServiceImpl implements TransactionService {
 
     private final TransactionsRepository transactionsRepository;
 
-    public TransactionsServiceImpl(TransactionsRepository transactionsRepository){
+    public TransactionsServiceImpl(TransactionsRepository transactionsRepository) {
         this.transactionsRepository = transactionsRepository;
     }
 
@@ -43,14 +42,12 @@ public class TransactionsServiceImpl implements TransactionService {
             }
             return transactionsList;
         } catch (DataAccessException e) {
-            throw new NotFoundException("Error accessing transaction data: " + e.getMessage());
-        } catch (Exception e) {
-            throw new RuntimeException("Unexpected error: " + e.getMessage(), e);
+            throw new RuntimeException("Error accessing transaction data: " + e.getMessage());
         }
     }
 
     @Override
-    public List<Transactions> getTransactionsByDate(LocalDateTime transactionDate) {
+    public List<Transactions> getTransactionsByDate(LocalDateTime transactionDate)throws TransactionNotFoundException {
 
         try {
             List<Transactions> transactionsListByTransactionData = transactionsRepository.findTransactionsByTransactionDate(transactionDate);
@@ -60,8 +57,6 @@ public class TransactionsServiceImpl implements TransactionService {
             return transactionsListByTransactionData;
         } catch (DataAccessException e) {
             throw new NotFoundException("Error accessing transaction data: " + e.getMessage());
-        } catch (Exception e) {
-            throw new RuntimeException("Unexpected error: " + e.getMessage(), e);
         }
     }
 

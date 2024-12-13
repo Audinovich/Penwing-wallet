@@ -12,6 +12,7 @@ import com.Testing.practicasTesteo.respository.ArticleRepository;
 import com.Testing.practicasTesteo.respository.CreditRepository;
 import com.Testing.practicasTesteo.respository.CustomerRepository;
 import com.Testing.practicasTesteo.respository.WalletRepository;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,43 +33,36 @@ public class CustomerServiceImpl implements CustomerService {
     public CustomerServiceImpl(CustomerRepository customerRepository,
                                WalletRepository walletRepository,
                                ArticleRepository articleRepository,
-                               CreditRepository creditRepository){
-        this.customerRepository= customerRepository;
-        this.walletRepository=walletRepository;
-        this.articleRepository=articleRepository;
-        this.creditRepository=creditRepository;
+                               CreditRepository creditRepository) {
+        this.customerRepository = customerRepository;
+        this.walletRepository = walletRepository;
+        this.articleRepository = articleRepository;
+        this.creditRepository = creditRepository;
     }
 
     @Override
     public List<Customer> getAllCustomers() {
 
-        try {
             List<Customer> customerFound = customerRepository.findAll();
             if (customerFound.isEmpty()) {
                 throw new CustomerNotFoundException("Customer not found");
             }
             return customerFound;
-        } catch (CustomerNotFoundException e) {
-            throw e;
-        }
+
     }
 
     @Override
     public Customer getCustomerById(long customerId) throws CustomerNotFoundException {
 
-        try {
-        return customerRepository.findById(customerId)
+           return customerRepository.findById(customerId)
                     .orElseThrow(() -> new CustomerNotFoundException("Customer not found with id: " + customerId));
-        } catch (CustomerNotFoundException e) {
-           throw e;
 
-        }
     }
 
     //TODO REVISAR ESTO
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Customer saveCustomer(Customer customer) throws NotSavedException {
+    public Customer saveCustomer(Customer customer) {
         try {
 
             Customer savedCustomer = customerRepository.save(customer);
@@ -99,7 +93,6 @@ public class CustomerServiceImpl implements CustomerService {
 
             creditRepository.save(credit);
 
-
             return savedCustomer;
 
         } catch (NotSavedException e) {
@@ -124,12 +117,9 @@ public class CustomerServiceImpl implements CustomerService {
 
             return customerRepository.save(customerUpdated);
         } else {
-
             throw new CustomerNotFoundException("Customer ID " + id + "no encontrado.");
         }
-
     }
-
 
     @Override
     public boolean deleteAllCustomers() {
@@ -141,7 +131,8 @@ public class CustomerServiceImpl implements CustomerService {
             }
             customerRepository.deleteAll();
             return true;
-        } catch (Exception e) {
+
+        } catch (DataAccessException e) {
             throw new NotDeletedException("An error occurred while deleting customers: " + e.getMessage(), e);
         }
 
@@ -151,30 +142,22 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public boolean deleteCustomerById(long id) {
         try {
-            Optional<Customer> customerFind = customerRepository.findById(id);
-            if (customerFind.isPresent()) {
-                customerRepository.deleteById(id);
-                return true;
-            } else {
-                throw new CustomerNotFoundException("Customer not found.");
+            long count = customerRepository.count();
+            if (count == 0) {
+                return false;
             }
-        } catch (Exception e) {
-            throw new NotDeletedException("An error occurred while deleting the customer.");
-        }
+            customerRepository.deleteById(id);
+            return true;
 
+        } catch (DataAccessException e) {
+            throw new NotDeletedException("An error occurred while deleting customers: "+ e.getMessage(), e);
+        }
     }
 
+    //TODO REVISAR ESTO CON ANDRES - ESTOY DEVOLVIENDO EL PASSWORD AL FRONT?
     @Override
     public Customer authenticate(String email, String password) {
-        try {
-            Optional<Customer> user = customerRepository.findByEmailAndPassword(email, password);
-            if (user.isPresent()) {
-                return user.get();
-            } else {
-                throw new AuthenticationException("Wrong credentials.");
-            }
-        } catch (Exception e) {
-            throw new AuthenticationException("Authentication Failed", e);
-        }
+        Optional<Customer> user = customerRepository.findByEmailAndPassword(email, password);
+        return user.orElseThrow(() -> new AuthenticationException("Wrong credentials."));
     }
 }

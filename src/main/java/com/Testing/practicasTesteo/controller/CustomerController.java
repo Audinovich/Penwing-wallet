@@ -6,6 +6,7 @@ import com.Testing.practicasTesteo.exceptions.CustomerNotFoundException;
 import com.Testing.practicasTesteo.exceptions.NotSavedException;
 import com.Testing.practicasTesteo.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,8 +40,8 @@ public class CustomerController {
         try {
             Customer customerFoundById = customerService.getCustomerById(customerId);
             return new ResponseEntity<>(customerFoundById, HttpStatus.OK);
-        } catch (CustomerNotFoundException ee) {
-            return new ResponseEntity<>(ee.getMessage(),HttpStatus.NOT_FOUND);
+        } catch (CustomerNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
 
@@ -80,10 +81,14 @@ public class CustomerController {
             if (customerFound) {
                 return new ResponseEntity<>("Customers has been deleted.", HttpStatus.OK);
             } else {
-                return new ResponseEntity<>("Customer not found.", HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>("Customers not found.", HttpStatus.NOT_FOUND);
             }
+        } catch (DataAccessException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.EXPECTATION_FAILED);
+
         } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+
         }
     }
 

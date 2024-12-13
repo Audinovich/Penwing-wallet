@@ -83,45 +83,36 @@ public class ViewController {
                         @RequestParam("password") String password,
                         Model model,
                         HttpSession session) {
-        System.out.println("Intento de login - email: " + email + " - password: " + password);
+
         try {
+            //devuelve el objeto de tipo customer validado , y puedo acceder a la info.
             Customer authCustomer = customerService.authenticate(email, password);
             if (authCustomer != null) {
-                System.out.println("Ingresado CORRECTAMENTE - email: " + email);
 
-                // Obtener el ID del cliente y almacenarlo en la sesión
                 Long customerId = authCustomer.getCustomerId();
                 String customerName = authCustomer.getName();
-                System.out.println("ID del usuario: " + customerId);
                 session.setAttribute("customer_id", customerId);
                 session.setAttribute("customer_name", customerName);
-                System.out.println("Customer name: " + customerName);
 
-                // Obtener el ID de la wallet del cliente si existe
+
                 Wallet wallet = authCustomer.getWallet();
                 if (wallet != null) {
                     Long walletId = wallet.getWalletId();
-                    System.out.println("ID de la wallet: " + walletId);
                     session.setAttribute("wallet_id", walletId);
                 } else {
-                    System.out.println("El cliente no tiene una wallet asociada.");
-                    model.addAttribute("error", "No tienes una wallet asociada. Contacta al soporte.");
+                    model.addAttribute("error", "The customer has not a wallet");
                     return "Index";
                 }
-
                 return "UserMenu";
 
             } else {
-                System.out.println("INGRESO FALLIDO - email: " + email);
                 model.addAttribute("error", "Credenciales incorrectas. Inténtalo de nuevo.");
                 return "Index";
             }
         } catch (AuthenticationException e) {
-            System.out.println("Error de autenticación: " + e.getMessage());
             model.addAttribute("error", "Error de autenticación. Inténtalo de nuevo.");
             return "Index";
         } catch (Exception e) {
-            System.out.println("Error inesperado: " + e.getMessage());
             model.addAttribute("error", "Ha ocurrido un error inesperado. Por favor, intenta más tarde.");
             return "Index";
         }
