@@ -4,7 +4,7 @@ import com.Testing.practicasTesteo.dto.ResponseDTO;
 import com.Testing.practicasTesteo.dto.TransactionsDTO;
 import com.Testing.practicasTesteo.entity.Transactions;
 import com.Testing.practicasTesteo.exceptions.TransactionNotFoundException;
-import com.Testing.practicasTesteo.service.TransactionService;
+import com.Testing.practicasTesteo.service.TransactionsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,7 +31,7 @@ class TransactionsControllerTest {
     MockMvc mockMvc;
 
     @MockBean
-    TransactionService transactionService;
+    TransactionsService transactionsService;
 
     private Transactions transaction;
     private List<Transactions> transactions;
@@ -56,7 +56,7 @@ class TransactionsControllerTest {
     @Test
     @DisplayName("GET /transaction/getAllTransactions - Should return 200 OK")
     void getAllTransactionsShouldReturnOK() throws Exception {
-        when(transactionService.getAllTransactions()).thenReturn(transactions);
+        when(transactionsService.getAllTransactions()).thenReturn(transactions);
 
         mockMvc.perform(get("/transaction/getAllTransactions"))
                 .andExpect(status().isOk())
@@ -71,7 +71,7 @@ class TransactionsControllerTest {
     @Test
     @DisplayName("GET /transaction/getAllTransactions - Should return 404 Not Found")
     void getAllTransactionsShouldReturnNotFound() throws Exception {
-        when(transactionService.getAllTransactions()).thenThrow(new TransactionNotFoundException("Transactions Not Found"));
+        when(transactionsService.getAllTransactions()).thenThrow(new TransactionNotFoundException("Transactions Not Found"));
 
         mockMvc.perform(get("/transaction/getAllTransactions"))
                 .andExpect(status().isNotFound())
@@ -81,7 +81,7 @@ class TransactionsControllerTest {
     @Test
     @DisplayName("GET /transaction/getAllTransactions - Should return 500 Internal Server Error")
     void getAllTransactionsShouldReturnInternalServerError() throws Exception {
-        when(transactionService.getAllTransactions()).thenThrow(new RuntimeException("Unexpected error"));
+        when(transactionsService.getAllTransactions()).thenThrow(new RuntimeException("Unexpected error"));
 
         mockMvc.perform(get("/transaction/getAllTransactions"))
                 .andExpect(status().isInternalServerError())
@@ -91,7 +91,7 @@ class TransactionsControllerTest {
     @Test
     @DisplayName("GET /transaction/getAllTransactionsByCustomerId - Should return 200 OK")
     void getAllTransactionsByCustomerIdShouldReturnOK() throws Exception {
-        when(transactionService.getAllTransactionsByCustomerId(1L)).thenReturn(transactions);
+        when(transactionsService.getAllTransactionsByCustomerId(1L)).thenReturn(transactions);
 
         mockMvc.perform(get("/transaction/getAllTransactionsByCustomerId/1").param("customerId", "1"))
                 .andExpect(status().isOk())
@@ -106,7 +106,7 @@ class TransactionsControllerTest {
     @Test
     @DisplayName("GET transaction/getAllTransactionsByCustomerId/1 - Should return 404 Not Found")
     void getAllTransactionsByCustomerIdShouldReturnNotFound() throws Exception {
-        when(transactionService.getAllTransactionsByCustomerId(1L)).thenThrow(new TransactionNotFoundException("Transactions Not Found"));
+        when(transactionsService.getAllTransactionsByCustomerId(1L)).thenThrow(new TransactionNotFoundException("Transactions Not Found"));
 
         mockMvc.perform(get("/transaction/getAllTransactionsByCustomerId/1"))
                 .andExpect(status().isNotFound())
@@ -116,7 +116,7 @@ class TransactionsControllerTest {
     @Test
     @DisplayName("GET /transaction/getAllTransactionsByCustomerId/1 - Should return 500 Internal Server Error")
     void getAllTransactionsByCustomerIdShouldReturnInternalServerError() throws Exception {
-        when(transactionService.getAllTransactionsByCustomerId(1L)).thenThrow(new RuntimeException("Unexpected error"));
+        when(transactionsService.getAllTransactionsByCustomerId(1L)).thenThrow(new RuntimeException("Unexpected error"));
 
         mockMvc.perform(get("/transaction/getAllTransactionsByCustomerId/1"))
                 .andExpect(status().isInternalServerError())
@@ -134,7 +134,7 @@ class TransactionsControllerTest {
         responseDTO.setCreditType("bitcoin");
         responseDTO.setOperation("add");
 
-        when(transactionService.saveTransaction(any(TransactionsDTO.class))).thenReturn(responseDTO);
+        when(transactionsService.saveTransaction(any(TransactionsDTO.class))).thenReturn(responseDTO);
 
         String transactionJson = """
                 {

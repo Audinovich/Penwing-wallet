@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
-
+//PRUEBAS DE INTEGRACION , SPRINGBOOTTEST + MOCKBEAN
 @SpringBootTest
 class ArticleServiceImplTest {
 
