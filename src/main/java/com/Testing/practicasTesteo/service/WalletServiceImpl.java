@@ -13,7 +13,7 @@ import java.util.Optional;
 @Service
 public class WalletServiceImpl implements WalletService {
 
-
+   @Autowired
    private final WalletRepository walletRepository;
 
    public WalletServiceImpl(WalletRepository walletRepository){

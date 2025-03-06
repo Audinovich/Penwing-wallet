@@ -62,20 +62,26 @@ public class ViewController {
 
     @GetMapping("/Alta.html")
     public String showAlta() {
+
         return "Alta";
     }
 
     @RequestMapping("/Index.html")
     public String index() {
+
         return "Index";
     }
 
     @RequestMapping("/Login.html")
     public String login() {
+
         return "Login";
     }
+
     @RequestMapping("/UserMenu.html")
-    public String userMenu(){return "UserMenu";}
+    public String userMenu() {
+        return "UserMenu";
+    }
 
     //validacion de datos con base de datos
     @PostMapping("/submit-login")

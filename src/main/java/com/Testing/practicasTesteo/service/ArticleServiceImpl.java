@@ -5,6 +5,7 @@ import com.Testing.practicasTesteo.exceptions.ArticleFetchException;
 import com.Testing.practicasTesteo.exceptions.ArticleNotFoundException;
 import com.Testing.practicasTesteo.exceptions.NotDeletedException;
 import com.Testing.practicasTesteo.exceptions.NotSavedException;
+import com.Testing.practicasTesteo.proxy.CoinsProxy;
 import com.Testing.practicasTesteo.respository.ArticleRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,15 +31,18 @@ public class ArticleServiceImpl implements ArticleService {
     //conexion con el repositorio a traves de constructor
     private final ArticleRepository articleRepository;
 
+    @Autowired
+    private  CoinsProxy proxy;
+
     public ArticleServiceImpl(ArticleRepository articleRepository) {
         this.articleRepository = articleRepository;
     }
-
     @Value("${mockdata}")
     Boolean mockData;
 
     @Value("$spring.jpa.hibernate.ddl-auto")
     String bbddValue;
+
 
 
     private static final String CREATE = "create";
@@ -49,9 +53,14 @@ public class ArticleServiceImpl implements ArticleService {
             getMockCryptos();
         }
     }
-// TODO hacer test
+
     @Override
     public List<Article> getAllArticles() throws ArticleNotFoundException, ArticleFetchException {
+
+        List<Article> newArticleLiost = proxy.getArticles();
+
+        String values;
+
         try {
             List<Article> articleList = articleRepository.findAll();
             if (articleList.isEmpty()) {
@@ -201,29 +210,15 @@ public class ArticleServiceImpl implements ArticleService {
 
         return existingArticles;
     }
+
+
     //SOLICITUD API EXTERNA HTTP , MANEJO EXCEPCIONES Y DESERIALIZA OBJECTMAPPER
-    //TODO ver el tema de la APIKEY
+
     List<Article> fetchCryptoDataFromAPI() throws IOException {
-        String apiUrl = "https://api.ejemplo.com/cryptodata";
-        String apiKey = "API_KEY";
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(apiUrl))
-                .header("Authorization", "Bearer " + apiKey)
-                .GET()
-                .build();
-        HttpResponse<String> response;
-        try {
-            response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (InterruptedException e) {
-            throw new RuntimeException("Error while fetching crypto data: " + e.getMessage(), e);
-        }
-        if (response.statusCode() == 200) {
-            ObjectMapper objectMapper = new ObjectMapper();
-            return objectMapper.readValue(response.body(), new TypeReference<List<Article>>() {
-            });
-        } else {
-            throw new IOException("Error fetching data from API: " + response.statusCode());
-        }
+
+        List<Article> fullArticleList = proxy.getArticles();
+
+
+        return fullArticleList;
     }
 }

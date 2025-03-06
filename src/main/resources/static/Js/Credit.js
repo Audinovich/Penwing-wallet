@@ -56,6 +56,8 @@ function displayArticlesAndCredit(articleCreditInfo) {
 }
 
 function openTransactionModal(type, symbol, currentPrice) {
+
+  console.log("Symbol en openTransactionModal:", symbol);
     $('#transactionModal').modal('show');
     document.getElementById('transaction-type').value = type;
     document.getElementById('selected-symbol').value = symbol;

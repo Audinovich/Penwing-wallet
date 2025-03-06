@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataAccessException;
 
@@ -19,14 +20,16 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class TransactionsServiceImplTest {
 
+    //TODO funcion de inject mocks
     @InjectMocks
-    TransactionsServiceImpl transactionsService;
+    TransactionService transactionsService;
 
     @Mock
     TransactionsRepository transactionsRepository;
 
-    private Transactions transaction;
+    //TransactionService transactionsService ;
 
+    private Transactions transaction;
 
     @BeforeEach
     void setUp() {
@@ -37,6 +40,8 @@ class TransactionsServiceImplTest {
                 .creditType("bitcoin")
                 .operation("buy")
                 .build();
+
+        //transactionsService = new TransactionsServiceImpl(transactionsRepository);
     }
 
 
@@ -47,37 +52,39 @@ class TransactionsServiceImplTest {
         List<Transactions> transactionsFound = transactionsRepository.findAll();
 
         assertNotNull(transactionsFound);
-        assertEquals(1,transactionsFound.size());
-        assertEquals("bitcoin",transactionsFound.get(0).getCreditType());
+        assertEquals(1, transactionsFound.size());
+        assertEquals("bitcoin", transactionsFound.get(0).getCreditType());
     }
 
 
     @Test
-    void getAllArticles_ShouldThrowTransactionNotFoundException_WhenFindAll(){
+    void getAllArticles_ShouldThrowTransactionNotFoundException_WhenFindAll() {
 
-        when(transactionsRepository.findAll()).thenThrow(new TransactionNotFoundException("Transactions Not Found") {});
+        when(transactionsRepository.findAll()).thenThrow(new TransactionNotFoundException("Transactions Not Found") {
+        });
 
-        TransactionNotFoundException exception = assertThrows(TransactionNotFoundException.class, ()->{
+        TransactionNotFoundException exception = assertThrows(TransactionNotFoundException.class, () -> {
             transactionsService.getAllTransactions();
         });
 
-        assertEquals("Transactions Not Found",exception.getMessage());
+        assertEquals("Transactions Not Found", exception.getMessage());
 
-        verify(transactionsRepository,times(1)).findAll();
+        verify(transactionsRepository, times(1)).findAll();
     }
 
     @Test
-    void getAllArticles_ShouldThrowDataAccessException_WhenFindAll(){
+    void getAllArticles_ShouldThrowDataAccessException_WhenFindAll() {
 
-        when(transactionsRepository.findAll()).thenThrow(new DataAccessException("Data Error") {});
+        when(transactionsRepository.findAll()).thenThrow(new DataAccessException("Data Error") {
+        });
 
-        RuntimeException exception = assertThrows(RuntimeException.class, ()->{
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             transactionsService.getAllTransactions();
         });
 
-        assertEquals("Error accessing transaction data: Data Error",exception.getMessage());
+        assertEquals("Error accessing transaction data: Data Error", exception.getMessage());
 
-        verify(transactionsRepository,times(1)).findAll();
+        verify(transactionsRepository, times(1)).findAll();
     }
 
     @Test
@@ -85,27 +92,25 @@ class TransactionsServiceImplTest {
 
         when(transactionsRepository.findTransactionsByTransactionDate(any())).thenReturn(List.of(transaction));
 
-        List<Transactions> transactionsFound  = transactionsService.getTransactionsByDate(any());
+        List<Transactions> transactionsFound = transactionsService.getTransactionsByDate(any());
 
         assertNotNull(transactionsFound);
-        assertEquals(1,transactionsFound.size());
-        assertEquals("buy",transactionsFound.get(0).getOperation());
+        assertEquals(1, transactionsFound.size());
+        assertEquals("buy", transactionsFound.get(0).getOperation());
     }
+
     @Test
     void getTransactionsByDate_ShouldThrowTransactionNotFoundException_WhenTransactionsExist() {
 
         when(transactionsRepository.findTransactionsByTransactionDate(any())).thenReturn(List.of());
 
 
-        
-
-        List<Transactions> transactionsFound  = transactionsService.getTransactionsByDate(any());
+        List<Transactions> transactionsFound = transactionsService.getTransactionsByDate(any());
 
         assertNotNull(transactionsFound);
-        assertEquals(1,transactionsFound.size());
-        assertEquals("buy",transactionsFound.get(0).getOperation());
+        assertEquals(1, transactionsFound.size());
+        assertEquals("buy", transactionsFound.get(0).getOperation());
     }
-
 
 
     @Test

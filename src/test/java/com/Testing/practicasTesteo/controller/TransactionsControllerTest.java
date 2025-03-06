@@ -4,7 +4,7 @@ import com.Testing.practicasTesteo.dto.ResponseDTO;
 import com.Testing.practicasTesteo.dto.TransactionsDTO;
 import com.Testing.practicasTesteo.entity.Transactions;
 import com.Testing.practicasTesteo.exceptions.TransactionNotFoundException;
-import com.Testing.practicasTesteo.service.TransactionsService;
+import com.Testing.practicasTesteo.service.TransactionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,7 +31,7 @@ class TransactionsControllerTest {
     MockMvc mockMvc;
 
     @MockBean
-    TransactionsService transactionsService;
+    TransactionService transactionsService;
 
     private Transactions transaction;
     private List<Transactions> transactions;

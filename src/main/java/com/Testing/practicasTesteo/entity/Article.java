@@ -2,6 +2,7 @@ package com.Testing.practicasTesteo.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,24 +23,41 @@ public class Article {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long articleId;
-
+    @JsonProperty("symbol")
     private String symbol;
+    @JsonProperty("name")
     private String name;
+    @JsonProperty("image")
     private String image;
+    @JsonProperty("current_price")
     private double currentPrice; // double
+    @JsonProperty("market_cap")
     private BigInteger marketCap; // BigInteger
+    @JsonProperty("total_volume")
     private BigInteger totalVolume; // BigInteger
+    @JsonProperty("high_24h")
     private double high24h; // double
+    @JsonProperty("low_24h")
     private double low24h; // double
+    @JsonProperty("price_change_24h")
     private double priceChange24h; // double
+    @JsonProperty("price_change_percentage_24h")
     private double priceChangePercentage24h; // double
+    @JsonProperty("market_cap_change_24h")
     private BigInteger marketCapChange24h; // BigInteger
+    @JsonProperty("market_cap_change_percentage_24h")
     private double marketCapChangePercentage24h; // double
+    @JsonProperty("circulating_supply")
     private BigInteger circulatingSupply; // BigInteger
+    @JsonProperty("total_supply")
     private BigInteger totalSupply; // BigInteger
+    @JsonProperty("ath")
     private double ath; // double
+    @JsonProperty("ath_change_percentage")
     private double athChangePercentage; // double
+    @JsonProperty("ath_date")
     private String athDate;
+    @JsonProperty("last_updated")
     private String lastUpdated;
 
     @ManyToMany(mappedBy = "articles")

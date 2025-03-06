@@ -9,6 +9,7 @@ import com.Testing.practicasTesteo.service.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -117,6 +118,7 @@ public class ArticleController {
     }
 
     @GetMapping("/fetch-crypto")
+    //@Scheduled(fixedRate =15000)
     public ResponseEntity<List<Article>> fetchCryptoData() {
         try {
 

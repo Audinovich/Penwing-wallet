@@ -161,7 +161,7 @@ public class CreditServiceImpl implements CreditService {
                 }
                 // Aumentar euros y reducir el balance de la criptomoneda específica
                 credit.setEuro(credit.getEuro() + (amount * (price)));
-                updateSpecificCryptoBalance(credit, creditType, amount, false); // Reducir cantidad
+                updateSpecificCryptoBalance(credit, creditType, amount, false);
                 break;
 
             default:
