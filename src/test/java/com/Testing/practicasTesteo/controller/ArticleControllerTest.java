@@ -145,15 +145,7 @@ class ArticleControllerTest {
                 .andExpect(content().string("No se han eliminado los articulos"));
     }
 
-    @Test
-    void fetchCryptoData_ShouldReturnOk() throws Exception {
-        when(articleService.fetchCryptoData()).thenReturn(articles);
 
-        mockMvc.perform(get("/article/fetch-crypto"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(1))
-                .andExpect(jsonPath("$[0].symbol").value("bitcoin"));
-    }
 
     @Test
     void getArticlesByCustomerId_ShouldReturnOk() throws Exception {

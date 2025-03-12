@@ -48,18 +48,15 @@ public class ArticleServiceImpl implements ArticleService {
     private static final String CREATE = "create";
 
     @PostConstruct
-    public void loadMockDataIfNeeded() {
+    public void loadMockDataIfNeeded() throws IOException {
         if (bbddValue.toLowerCase().equals(CREATE) && mockData) {
-            getMockCryptos();
+            fetchCryptoDataFromAPI();
         }
     }
 
     @Override
     public List<Article> getAllArticles() throws ArticleNotFoundException, ArticleFetchException {
 
-        List<Article> newArticleLiost = proxy.getArticles();
-
-        String values;
 
         try {
             List<Article> articleList = articleRepository.findAll();
@@ -171,11 +168,7 @@ public class ArticleServiceImpl implements ArticleService {
 
 
     // ternario para ver si consumo MOCK o API
-    @Override
-    public List<Article> fetchCryptoData() throws IOException {
-        System.out.println("Valor de mockData: " + mockData);
-        return mockData ? getMockCryptos() : fetchCryptoDataFromAPI();
-    }
+
 
     //BUSCA LOS ARTICULOS EN LA BD POR SYMBOL Y SI NO ENCUENTRA LOS CREA, O ACTUALIZA
     @Override
@@ -212,13 +205,28 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
 
-    //SOLICITUD API EXTERNA HTTP , MANEJO EXCEPCIONES Y DESERIALIZA OBJECTMAPPER
-
-    List<Article> fetchCryptoDataFromAPI() throws IOException {
-
+    public List<Article> fetchCryptoDataFromAPI() throws IOException {
         List<Article> fullArticleList = proxy.getArticles();
 
+        List<Article> existingArticles = articleRepository.findAll(); // Recuperamos todos los artículos existentes
 
-        return fullArticleList;
+        // Iteramos sobre los artículos obtenidos desde la API
+        for (Article newCrypto : fullArticleList) {
+            Optional<Article> existingCryptoOpt = existingArticles.stream()
+                    .filter(article -> article.getSymbol().equals(newCrypto.getSymbol()))
+                    .findFirst();
+
+            if (existingCryptoOpt.isPresent()) {
+                // Si ya existe un artículo con el mismo symbol, actualizamos los campos
+                updateArticleFields(existingCryptoOpt.get(), newCrypto);
+                saveArticle(existingCryptoOpt.get()); // Guardamos el artículo actualizado
+            } else {
+
+                existingArticles.add(saveArticle(newCrypto));
+            }
+        }
+
+
+        return existingArticles.stream().limit(25).toList();
     }
 }

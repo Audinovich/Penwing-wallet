@@ -122,7 +122,7 @@ public class ArticleController {
     public ResponseEntity<List<Article>> fetchCryptoData() {
         try {
 
-            List<Article> cryptoData = articleService.fetchCryptoData();
+            List<Article> cryptoData = articleService.fetchCryptoDataFromAPI();
             articleService.saveArticles(cryptoData);
             return new ResponseEntity<>(cryptoData, HttpStatus.OK);
         } catch (IOException e) {
